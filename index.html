@@ -11,7 +11,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
-        /* === VARIABLES DE ENTORNO === */
         :root {
             --primary-blue: #005088;
             --primary-dark: #003a63;
@@ -46,7 +45,6 @@
             overflow: hidden;
         }
 
-        /* === SIDEBAR (Barra Lateral) === */
         .sidebar {
             width: 260px;
             background-color: var(--bg-panel);
@@ -102,16 +100,10 @@
             border-left-color: var(--primary-blue);
         }
 
-        .nav-item.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
         .nav-item .material-icons-round {
             font-size: 22px;
         }
 
-        /* Sección del Equipo */
         .team-box {
             margin-top: auto;
             padding: 20px 24px;
@@ -155,7 +147,6 @@
             border-radius: 50%;
         }
 
-        /* === MAIN CONTENT === */
         .main-content {
             flex: 1;
             display: flex;
@@ -231,7 +222,6 @@
             background-color: #cbd5e1;
         }
 
-        /* Grilla visual sobre el mapa */
         .parking-grid {
             position: absolute;
             top: 20px;
@@ -270,7 +260,6 @@
         .spot.red { background-color: var(--status-red); }
         .spot.yellow { background-color: var(--status-yellow); color: var(--text-main); }
 
-        /* === TABLA DE LUGARES === */
         .table-card {
             background: var(--bg-panel);
             border-radius: var(--radius-lg);
@@ -311,7 +300,7 @@
         }
 
         td {
-            padding: 16px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border-color);
             vertical-align: middle;
             font-size: 14px;
@@ -344,46 +333,79 @@
         .btn-secondary { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border-color); }
         .btn-secondary:hover { background: #e2e8f0; }
 
-        /* === SECCIÓN DE MEJORA VIAL === */
-        .info-card {
-            background: var(--bg-panel);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
-            padding: 20px;
+        /* Estilos del Modal QR */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            width: 300px;
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
 
-        .info-section {
-            border-left: 4px solid var(--primary-blue);
-            padding-left: 14px;
+        .modal-content h3 {
+            color: var(--primary-blue);
+            font-size: 18px;
         }
 
-        .info-section.climate {
-            border-left-color: var(--status-green);
+        .modal-content img {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
         }
 
-        .info-section h4 {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 4px;
-        }
-
-        .info-section p {
+        .modal-content p {
             font-size: 13px;
             color: var(--text-muted);
-            line-height: 1.4;
         }
+
+        .btn-close {
+            background: var(--status-red);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .btn-close:hover {
+            background: #b91c1c;
+        }
+
     </style>
 </head>
 <body>
 
+    <div id="qrModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="qrTitle">QR Generado</h3>
+            <img id="qrImage" src="" alt="Código QR">
+            <p>Guarde este código para acceder al estacionamiento.</p>
+            <button class="btn-close" onclick="cerrarModal()">Cerrar y Confirmar</button>
+        </div>
+    </div>
+
     <aside class="sidebar">
         <div class="logo-container">
-            <img src="https://static.wikia.nocookie.net/logopedia/images/7/7b/Innova_Schools_escudo.svg/revision/latest/scale-to-width-down/1200?cb=20200925143606&path-prefix=es" alt="Logo Innova">
+            <img src="innova.jpg" alt="Logo Innova">
             <h1>Innova<br>Schools</h1>
         </div>
         <nav class="nav-menu">
@@ -393,8 +415,8 @@
             <a href="#" class="nav-item" onclick="activarMenu(this)">
                 <span class="material-icons-round">grid_view</span> Asignación de estacionamiento
             </a>
-            <a href="#" class="nav-item disabled">
-                <span class="material-icons-round">warning_amber</span> Alertas en proceso
+            <a href="#" class="nav-item" onclick="activarMenu(this)">
+                <span class="material-icons-round">qr_code_scanner</span> Control de QR
             </a>
         </nav>
 
@@ -416,7 +438,7 @@
     <main class="main-content">
         
         <header class="top-header">
-            <h2>Bienvenido, Operador de Tránsito</h2>
+            <h2>Bienvenido</h2>
         </header>
 
         <div class="dashboard-grid">
@@ -431,63 +453,63 @@
                 </div>
             </div>
 
-            <div class="table-card">
+            <div class="table-card" style="grid-column: 1;">
                 <div class="card-header">
-                    <h3>Lugares de Estacionamiento Libres</h3>
+                    <h3>Lugares de Estacionamiento</h3>
                     <p>Sincronización en tiempo real con los cuadrantes del mapa satelital.</p>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Espacio ID</th>
-                            <th>Zona</th>
-                            <th>Estado Actual</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Estacionamiento A1</strong></td>
-                            <td>Terreno Exterior</td>
-                            <td><span class="badge parked">Libre</span></td>
-                            <td>
-                                <button class="btn-action btn-primary" onclick="gestionarEspacio(this, 'A1')">Reservar Espacio</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Estacionamiento A2</strong></td>
-                            <td>Terreno Exterior</td>
-                            <td><span class="badge parked">Libre</span></td>
-                            <td>
-                                <button class="btn-action btn-primary" onclick="gestionarEspacio(this, 'A2')">Reservar Espacio</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Estacionamiento A3</strong></td>
-                            <td>Terreno Exterior</td>
-                            <td><span class="badge transit">Ocupado</span></td>
-                            <td>
-                                <button class="btn-action btn-secondary" onclick="gestionarEspacio(this, 'A3')">Liberar Espacio</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div style="max-height: 380px; overflow-y: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Espacio ID</th>
+                                <th>Zona</th>
+                                <th>Estado Actual</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>Estacionamiento A1</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="A1" onclick="generarQR(this, 'A1')">Generar QR / Ocupar</button></td></tr>
+                            <tr><td><strong>Estacionamiento A2</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="A2" onclick="generarQR(this, 'A2')">Generar QR / Ocupar</button></td></tr>
+                            <tr><td><strong>Estacionamiento A3</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="A3" onclick="generarQR(this, 'A3')">Generar QR / Ocupar</button></td></tr>
+                            <tr><td><strong>Estacionamiento A4</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="A4" onclick="generarQR(this, 'A4')">Generar QR / Ocupar</button></td></tr>
+                            <tr><td><strong>Estacionamiento A5</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="A5" onclick="generarQR(this, 'A5')">Generar QR / Ocupar</button></td></tr>
+                            <tr><td><strong>Estacionamiento B1</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="B1" onclick="generarQR(this, 'B1')">Generar QR / Ocupar</button></td></tr>
+                            <tr><td><strong>Estacionamiento B2</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="B2" onclick="generarQR(this, 'B2')">Generar QR / Ocupar</button></td></tr>
+                            <tr><td><strong>Estacionamiento B3</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="B3" onclick="generarQR(this, 'B3')">Generar QR / Ocupar</button></td></tr>
+                            <tr><td><strong>Estacionamiento B4</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="B4" onclick="generarQR(this, 'B4')">Generar QR / Ocupar</button></td></tr>
+                            <tr><td><strong>Estacionamiento B5</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="B5" onclick="generarQR(this, 'B5')">Generar QR / Ocupar</button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="info-card">
-                <div class="card-header" style="margin-bottom: 4px;">
-                    <h3>Mejora del Tránsito Vehicular</h3>
-                    <p>Impacto estratégico del proyecto en los accesos del campus.</p>
+            <div class="table-card" style="grid-column: 2;">
+                <div class="card-header">
+                    <h3>Control de usuarios</h3>
+                    <p>Usuarios intentando salir de casa ahora mismo.</p>
                 </div>
-                
-                <div class="info-section">
-                    <h4>Tránsito en la entrada y salida del colegio</h4>
-                    <p>Al derivar los vehículos al terreno privado de manera organizada, se elimina la congestión en las puertas principales, liberando las vías públicas para un flujo escolar seguro y fluido.</p>
-                </div>
-
-                <div class="info-section climate">
-                    <h4>Acción por el clima</h4>
-                    <p>Reducir las colas de autos reduce el tiempo de motores encendidos en ralentí ("idle"). Menos tiempo buscando espacio se traduce en una reducción directa de emisiones de CO₂ alrededor del colegio.</p>
+                <div style="max-height: 380px; overflow-y: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Usuario en App</th>
+                                <th>Estado de Salida</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Usuario A1</td><td><span id="status-user-A1" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
+                            <tr><td>Usuario A2</td><td><span id="status-user-A2" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
+                            <tr><td>Usuario A3</td><td><span id="status-user-A3" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
+                            <tr><td>Usuario A4</td><td><span id="status-user-A4" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
+                            <tr><td>Usuario A5</td><td><span id="status-user-A5" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
+                            <tr><td>Usuario B1</td><td><span id="status-user-B1" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
+                            <tr><td>Usuario B2</td><td><span id="status-user-B2" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
+                            <tr><td>Usuario B3</td><td><span id="status-user-B3" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
+                            <tr><td>Usuario B4</td><td><span id="status-user-B4" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
+                            <tr><td>Usuario B5</td><td><span id="status-user-B5" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -505,34 +527,65 @@
             elemento.classList.add('active');
         }
 
-        function gestionarEspacio(btn, espacioId) {
-            const row = btn.closest('tr');
-            const badge = row.querySelector('.badge');
-            
+        // Función centralizada para cambiar el estado en todos los lugares (Botón, Mapa y Usuario)
+        function cambiarEstadoEspacio(espacioId, isOccupied) {
+            // 1. Sincronizar minimapa flotante
             const mapSpots = Array.from(document.querySelectorAll('.spot'));
             const mapSpot = mapSpots.find(spot => spot.textContent === espacioId);
+            if(mapSpot) {
+                mapSpot.className = isOccupied ? 'spot red' : 'spot green';
+                mapSpot.title = isOccupied ? `Estacionamiento ${espacioId} - Ocupado` : `Estacionamiento ${espacioId} - Libre`;
+            }
 
-            if (btn.classList.contains('btn-primary')) {
-                btn.className = 'btn-action btn-secondary';
-                btn.textContent = 'Liberar Espacio';
-                badge.className = 'badge transit';
-                badge.textContent = 'Ocupado';
-                
-                if(mapSpot) {
-                    mapSpot.className = 'spot red';
-                    mapSpot.title = `Estacionamiento ${espacioId} - Ocupado`;
-                }
-            } else {
-                btn.className = 'btn-action btn-primary';
-                btn.textContent = 'Reservar Espacio';
-                badge.className = 'badge parked';
-                badge.textContent = 'Libre';
-                
-                if(mapSpot) {
-                    mapSpot.className = 'spot green';
-                    mapSpot.title = `Estacionamiento ${espacioId} - Libre`;
+            // 2. Sincronizar botón de la tabla principal
+            const btn = document.querySelector(`button[data-id="${espacioId}"]`);
+            if (btn) {
+                const row = btn.closest('tr');
+                const badge = row.querySelector('.badge');
+                if (isOccupied) {
+                    btn.className = 'btn-action btn-secondary';
+                    btn.textContent = 'Liberar Espacio';
+                    badge.className = 'badge transit';
+                    badge.textContent = 'Ocupado';
+                } else {
+                    btn.className = 'btn-action btn-primary';
+                    btn.textContent = 'Generar QR / Ocupar';
+                    badge.className = 'badge parked';
+                    badge.textContent = 'Libre';
                 }
             }
+
+            // 3. Sincronizar la Luz del Usuario automáticamente
+            const userBadge = document.getElementById(`status-user-${espacioId}`);
+            if (userBadge) {
+                if (isOccupied) {
+                    userBadge.className = 'badge transit';
+                    userBadge.textContent = 'Luz Roja: Esperar';
+                } else {
+                    userBadge.className = 'badge parked';
+                    userBadge.textContent = 'Luz Verde: Salir Ahora';
+                }
+            }
+        }
+
+        // Evento que se dispara desde el botón de la tabla
+        function generarQR(btn, espacioId) {
+            if (btn.classList.contains('btn-primary')) {
+                // Abre el modal y genera el QR
+                document.getElementById('qrTitle').textContent = `Acceso: Estacionamiento ${espacioId}`;
+                document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=Reserva_Innova_${espacioId}`;
+                document.getElementById('qrModal').style.display = 'flex';
+                
+                // Cambia estado a ocupado
+                cambiarEstadoEspacio(espacioId, true);
+            } else {
+                // Si ya está ocupado y se presiona, se libera el espacio
+                cambiarEstadoEspacio(espacioId, false);
+            }
+        }
+
+        function cerrarModal() {
+            document.getElementById('qrModal').style.display = 'none';
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -550,45 +603,49 @@
                 popupAnchor: [0, -21]     
             });
 
-            // Array con las coordenadas originales y las 4 nuevas (ninguna repetida)
             const parkingSpotsCoords = [
-                [-6.827059401566791, -79.92388757628905], // Original (A1)
-                [-6.826964507865743, -79.92367638534489], // Nueva (A2)
-                [-6.826999795148236, -79.92374947553299], // Nueva (A3)
-                [-6.827091675230061, -79.92382994179515], // Nueva (A4)
-                [-6.827085683052319, -79.9239788043849]   // Nueva (A5)
+                { lat: -6.826896952567946, lng: -79.92368676791544, name: "A1" },
+                { lat: -6.82693025235926,  lng: -79.92373774503297, name: "A2" },
+                { lat: -6.826963599061987, lng: -79.92378404622772, name: "A3" },
+                { lat: -6.827056810746118, lng: -79.92393089715614, name: "A4" },
+                { lat: -6.827171064060995, lng: -79.92392268316294, name: "A5" },
+                
+                { lat: -6.826916952567946, lng: -79.92365676791544, name: "B1" },
+                { lat: -6.82695025235926,  lng: -79.92370774503297, name: "B2" },
+                { lat: -6.826983599061987, lng: -79.92375404622772, name: "B3" },
+                { lat: -6.827076810746118, lng: -79.92390089715614, name: "B4" },
+                { lat: -6.827191064060995, lng: -79.92389268316294, name: "B5" }
             ];
 
-            // Iteramos sobre las coordenadas para imprimir todos los marcadores
-            parkingSpotsCoords.forEach((coord, index) => {
-                L.marker(coord, { icon: parkingIcon })
+            parkingSpotsCoords.forEach((spot) => {
+                L.marker([spot.lat, spot.lng], { icon: parkingIcon })
                     .addTo(map)
-                    .bindPopup(`<b>Estacionamiento A${index + 1}</b><br>Zona Exterior Asignada`);
+                    .bindPopup(`<b>Estacionamiento ${spot.name}</b><br>Zona de Estacionamiento`);
             });
 
             const gridContainer = document.getElementById('terreno-exterior');
             
             const spotsData = [
-                { id: 'A1', status: 'green' }, { id: 'A2', status: 'green' }, { id: 'A3', status: 'red' },
-                { id: 'A4', status: 'green' }, { id: 'A5', status: 'yellow' }, { id: 'A6', status: 'yellow' },
-                { id: 'B1', status: 'red' }, { id: 'B2', status: 'red' }, { id: 'B3', status: 'green' },
-                { id: 'B4', status: 'green' }, { id: 'B5', status: 'green' }, { id: 'B6', status: 'yellow' },
+                { id: 'A1', status: 'green' }, { id: 'A2', status: 'green' }, { id: 'A3', status: 'green' },
+                { id: 'A4', status: 'green' }, { id: 'A5', status: 'green' }, { id: 'B1', status: 'green' },
+                { id: 'B2', status: 'green' }, { id: 'B3', status: 'green' }, { id: 'B4', status: 'green' },
+                { id: 'B5', status: 'green' }
             ];
 
             spotsData.forEach(spot => {
                 const div = document.createElement('div');
                 div.className = `spot ${spot.status}`;
                 div.textContent = spot.id;
-                div.title = `Estacionamiento ${spot.id} - ${spot.status === 'green' ? 'Libre' : spot.status === 'red' ? 'Ocupado' : 'Reservado'}`;
+                div.title = `Estacionamiento ${spot.id} - Libre`;
                 
                 div.addEventListener('click', () => {
                     if(div.classList.contains('green')) {
                         if(confirm(`El espacio ${spot.id} está libre. ¿Deseas marcarlo como ocupado en tiempo real?`)) {
-                            div.className = 'spot red';
+                            cambiarEstadoEspacio(spot.id, true);
                         }
                     } else if (div.classList.contains('red')) {
                         if(confirm(`El espacio ${spot.id} está ocupado. ¿Deseas liberarlo?`)) {
-                            div.className = 'spot green';
+                            cambiarEstadoEspacio(spot.id, false);
                         }
                     }
                 });
