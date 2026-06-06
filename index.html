@@ -245,7 +245,7 @@
             top: 20px;
             right: 20px;
             display: grid;
-            grid-template-columns: repeat(6, 40px);
+            grid-template-columns: repeat(5, 40px); /* Ajustado a 5 columnas para A, B, C, D, E */
             gap: 4px;
             background: rgba(0,0,0,0.4);
             padding: 8px;
@@ -340,6 +340,8 @@
         .btn-secondary { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border-color); }
         .btn-secondary:hover { background: #e2e8f0; }
 
+        .btn-disabled { background: #cbd5e1; color: #64748b; border: 1px solid var(--border-color); cursor: not-allowed; }
+
         .modal-overlay {
             display: none;
             position: fixed;
@@ -363,13 +365,19 @@
             gap: 16px;
         }
 
-        .modal-content img {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px;
+        .input-placa {
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .input-placa:focus {
+            border-color: var(--primary-blue);
         }
 
         .btn-close {
@@ -389,12 +397,12 @@
         <img src="IP.png" alt="Innovation Program">
     </div>
 
-    <div id="qrModal" class="modal-overlay">
+    <div id="plateModal" class="modal-overlay">
         <div class="modal-content">
-            <h3 id="qrTitle">QR Generado</h3>
-            <img id="qrImage" src="" alt="Código QR">
-            <p>Guarde este código para acceder al estacionamiento.</p>
-            <button class="btn-close" onclick="cerrarModal('qrModal')">Cerrar y Confirmar</button>
+            <h3 style="color: var(--primary-blue);">Identificación de Vehículo</h3>
+            <p>Por favor, ingresa el número de tu placa para acceder al sistema y reservar un espacio.</p>
+            <input type="text" id="inputPlaca" class="input-placa" placeholder="EJ: ABC-123" maxlength="8">
+            <button class="btn-action btn-primary" onclick="registrarPlaca()">Entrar al Sistema</button>
         </div>
     </div>
 
@@ -417,7 +425,6 @@
         <nav class="nav-menu">
             <a href="#" class="nav-item active" onclick="cambiarMenuActivo(event, this)"><span class="material-icons-round">map</span> Mapa Satelital</a>
             <a href="#" class="nav-item" onclick="cambiarMenuActivo(event, this)"><span class="material-icons-round">grid_view</span> Asignación</a>
-            <a href="#" class="nav-item" onclick="cambiarMenuActivo(event, this)"><span class="material-icons-round">qr_code_scanner</span> Control de QR</a>
         </nav>
 
         <div class="team-box">
@@ -479,7 +486,7 @@
                     <table id="usersTable">
                         <thead>
                             <tr>
-                                <th>Usuario en App</th>
+                                <th>Vehículo en App</th>
                                 <th>Estado de Salida</th>
                             </tr>
                         </thead>
@@ -518,21 +525,50 @@
         }
         const database = firebase.database();
 
-        const espacios = ['A1', 'A2', 'A3', 'A4', 'A5', 'B1', 'B2', 'B3', 'B4', 'B5'];
+        // Se agregaron las series D y E completas
+        const espacios = [
+            'A1', 'A2', 'A3', 'A4', 'A5', 
+            'B1', 'B2', 'B3', 'B4', 'B5', 
+            'C1', 'C2', 'C3', 'C4', 'C5', 
+            'D1', 'D2', 'D3', 'D4', 'D5', 
+            'E1', 'E2', 'E3', 'E4', 'E5'
+        ];
         let temporizadoresLocales = {};
         let espacioEnPregunta = null;
+        
+        let miPlaca = "";
+        let estadoGlobal = {};
 
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 splash.classList.add('hidden-splash');
-                setTimeout(() => splash.style.display = 'none', 500);
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    document.getElementById('plateModal').style.display = 'flex';
+                }, 500);
             }, 2000);
 
             generarEstructuraDOM();
             inicializarMapa();
             escucharFirebase();
         });
+
+        function registrarPlaca() {
+            const input = document.getElementById('inputPlaca').value.trim().toUpperCase();
+            if(input.length >= 3) {
+                miPlaca = input;
+                document.getElementById('plateModal').style.display = 'none';
+                
+                Object.keys(estadoGlobal).forEach(id => {
+                    if (estadoGlobal[id]) {
+                        sincronizarUI(id, estadoGlobal[id].estado, estadoGlobal[id].placa);
+                    }
+                });
+            } else {
+                alert("Por favor, ingrese una placa válida.");
+            }
+        }
 
         function generarEstructuraDOM() {
             const tableBody = document.getElementById('tableBody');
@@ -545,12 +581,12 @@
                         <td><strong>Estacionamiento ${id}</strong></td>
                         <td>Zona</td>
                         <td><span id="badge-${id}" class="badge parked">Libre</span></td>
-                        <td><button id="btn-${id}" class="btn-action btn-primary" onclick="interactuarEspacio('${id}')">Generar QR / Ocupar</button></td>
+                        <td><button id="btn-${id}" class="btn-action btn-primary" onclick="interactuarEspacio('${id}')">Ocupar Espacio</button></td>
                     </tr>`;
                 
                 usersBody.innerHTML += `
                     <tr>
-                        <td>Usuario ${id}</td>
+                        <td id="user-name-${id}">Usuario ${id}</td>
                         <td><span id="user-${id}" class="badge parked">Libre</span></td>
                     </tr>`;
 
@@ -564,60 +600,80 @@
         }
 
         function interactuarEspacio(id) {
+            if (miPlaca === "") {
+                alert("Debe registrar su placa primero.");
+                return;
+            }
+
             const btn = document.getElementById(`btn-${id}`);
+            
+            if (btn.disabled) return;
+
             const estaLibre = btn.classList.contains('btn-primary');
             
             if (estaLibre) {
-                document.getElementById('qrTitle').textContent = `Acceso: Estacionamiento ${id}`;
-                document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=Reserva_Innova_${id}`;
-                document.getElementById('qrModal').style.display = 'flex';
-                
-                actualizarEstadoFirebase(id, true);
+                actualizarEstadoFirebase(id, true, miPlaca);
                 iniciarTemporizador(id, 60000);
             } else {
-                actualizarEstadoFirebase(id, false);
+                actualizarEstadoFirebase(id, false, "");
                 limpiarTemporizador(id);
             }
         }
 
-        function actualizarEstadoFirebase(id, ocupado) {
-            database.ref('estacionamientos/' + id).set({ estado: ocupado });
+        function actualizarEstadoFirebase(id, ocupado, placaAsignada) {
+            database.ref('estacionamientos/' + id).set({ estado: ocupado, placa: placaAsignada });
         }
 
         function escucharFirebase() {
             database.ref('estacionamientos').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    Object.keys(data).forEach(id => {
-                        sincronizarUI(id, data[id].estado);
-                    });
+                    estadoGlobal = data;
+                    if (miPlaca !== "") {
+                        Object.keys(data).forEach(id => {
+                            sincronizarUI(id, data[id].estado, data[id].placa);
+                        });
+                    }
                 }
             });
         }
 
-        function sincronizarUI(id, ocupado) {
+        function sincronizarUI(id, ocupado, placaOcupante) {
             const btn = document.getElementById(`btn-${id}`);
             const badge = document.getElementById(`badge-${id}`);
             const userBadge = document.getElementById(`user-${id}`);
+            const userName = document.getElementById(`user-name-${id}`);
             const spot = document.getElementById(`spot-${id}`);
 
-            if (!btn || !badge || !userBadge || !spot) return;
+            if (!btn || !badge || !userBadge || !spot || !userName) return;
 
             if (ocupado) {
-                btn.className = 'btn-action btn-secondary';
-                btn.textContent = 'Liberar Espacio';
                 badge.className = 'badge transit';
                 badge.textContent = 'Ocupado';
                 userBadge.className = 'badge transit';
                 userBadge.textContent = 'Ocupado';
+                userName.textContent = `Placa: ${placaOcupante}`;
                 spot.className = 'spot red';
+
+                if (placaOcupante === miPlaca) {
+                    btn.className = 'btn-action btn-secondary';
+                    btn.textContent = 'Liberar Espacio';
+                    btn.disabled = false;
+                } else {
+                    btn.className = 'btn-action btn-disabled';
+                    btn.textContent = `Ocupado (${placaOcupante})`;
+                    btn.disabled = true;
+                }
             } else {
                 btn.className = 'btn-action btn-primary';
-                btn.textContent = 'Generar QR / Ocupar';
+                btn.textContent = 'Ocupar Espacio';
+                btn.disabled = false;
+                
                 badge.className = 'badge parked';
                 badge.textContent = 'Libre';
                 userBadge.className = 'badge parked';
                 userBadge.textContent = 'Libre';
+                userName.textContent = `Usuario ${id}`;
                 spot.className = 'spot green';
             }
         }
@@ -641,16 +697,12 @@
         function accionTemporizador(accion) {
             document.getElementById('timerModal').style.display = 'none';
             if (accion === 'liberar') {
-                actualizarEstadoFirebase(espacioEnPregunta, false);
+                actualizarEstadoFirebase(espacioEnPregunta, false, "");
                 limpiarTemporizador(espacioEnPregunta);
             } else if (accion === 'extender') {
                 iniciarTemporizador(espacioEnPregunta, 30000);
             }
             espacioEnPregunta = null;
-        }
-
-        function cerrarModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
         }
 
         function inicializarMapa() {
@@ -667,6 +719,7 @@
                 popupAnchor: [0, -21]     
             });
 
+            // Se agregaron las coordenadas de las series D y E
             const parkingSpotsCoords = [
                 { lat: -6.826896952567946, lng: -79.92368676791544, name: "A1" },
                 { lat: -6.82693025235926,  lng: -79.92373774503297, name: "A2" },
@@ -678,7 +731,25 @@
                 { lat: -6.82695025235926,  lng: -79.92370774503297, name: "B2" },
                 { lat: -6.826983599061987, lng: -79.92375404622772, name: "B3" },
                 { lat: -6.827076810746118, lng: -79.92390089715614, name: "B4" },
-                { lat: -6.827191064060995, lng: -79.92389268316294, name: "B5" }
+                { lat: -6.827191064060995, lng: -79.92389268316294, name: "B5" },
+
+                { lat: -6.827278042684312, lng: -79.92435014148151, name: "C1" },
+                { lat: -6.827256071370563, lng: -79.9243239899465,  name: "C2" },
+                { lat: -6.8272460844094365, lng: -79.92429582675493, name: "C3" },
+                { lat: -6.827233434258377, lng: -79.92428174515915, name: "C4" },
+                { lat: -6.827402546776524, lng: -79.92429247399403, name: "C5" },
+
+                { lat: -6.827377912279561, lng: -79.92426229913679, name: "D1" },
+                { lat: -6.827369257629711, lng: -79.92421670158856, name: "D2" },
+                { lat: -6.8273459519478585, lng: -79.92418249935093, name: "D3" },
+                { lat: -6.827326641524896, lng: -79.92414762648119, name: "D4" },
+                { lat: -6.827304681131366, lng: -79.92411478985487, name: "D5" },
+
+                { lat: -6.827261728812469, lng: -79.92404912298207, name: "E1" },
+                { lat: -6.827241754890228, lng: -79.9240149248209,  name: "E2" },
+                { lat: -6.827219783574814, lng: -79.92398944383807, name: "E3" },
+                { lat: -6.82718649370104,  lng: -79.92412556593058, name: "E4" },
+                { lat: -6.827162524990505, lng: -79.92408332114326, name: "E5" }
             ];
 
             parkingSpotsCoords.forEach((spot) => {
