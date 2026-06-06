@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Innovadores | Control de Tránsito</title>
+    <link rel="icon" href="IP.png" type="image/png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
         :root {
@@ -43,6 +48,27 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
+        }
+
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: white;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+
+        #splash-screen img {
+            max-width: 300px;
+            height: auto;
+        }
+
+        .hidden-splash {
+            opacity: 0;
+            pointer-events: none;
         }
 
         .sidebar {
@@ -92,16 +118,13 @@
             font-weight: 600;
             transition: all 0.3s ease;
             border-left: 4px solid transparent;
+            cursor: pointer;
         }
 
-        .nav-item:hover:not(.disabled), .nav-item.active {
+        .nav-item:hover, .nav-item.active {
             background-color: #f8fafc;
             color: var(--primary-blue);
             border-left-color: var(--primary-blue);
-        }
-
-        .nav-item .material-icons-round {
-            font-size: 22px;
         }
 
         .team-box {
@@ -162,11 +185,6 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: var(--shadow-md);
-        }
-
-        .top-header h2 {
-            font-size: 20px;
-            font-weight: 600;
         }
 
         .dashboard-grid {
@@ -252,13 +270,8 @@
             border: 1px solid rgba(255,255,255,0.3);
         }
 
-        .spot:hover {
-            transform: scale(1.05);
-        }
-
         .spot.green { background-color: var(--status-green); }
         .spot.red { background-color: var(--status-red); }
-        .spot.yellow { background-color: var(--status-yellow); color: var(--text-main); }
 
         .table-card {
             background: var(--bg-panel);
@@ -276,11 +289,7 @@
         .card-header h3 {
             color: var(--text-main);
             font-size: 18px;
-        }
-
-        .card-header p {
-            color: var(--text-muted);
-            font-size: 14px;
+            margin: 0;
         }
 
         table {
@@ -295,7 +304,6 @@
             padding: 12px 16px;
             font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -311,7 +319,6 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
-            transition: 0.3s;
         }
 
         .badge.transit { background: #fee2e2; color: #991b1b; } 
@@ -333,7 +340,6 @@
         .btn-secondary { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border-color); }
         .btn-secondary:hover { background: #e2e8f0; }
 
-        /* Estilos del Modal QR */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -351,15 +357,10 @@
             border-radius: 12px;
             text-align: center;
             box-shadow: var(--shadow-lg);
-            width: 300px;
+            width: 320px;
             display: flex;
             flex-direction: column;
             gap: 16px;
-        }
-
-        .modal-content h3 {
-            color: var(--primary-blue);
-            font-size: 18px;
         }
 
         .modal-content img {
@@ -371,11 +372,6 @@
             padding: 10px;
         }
 
-        .modal-content p {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
         .btn-close {
             background: var(--status-red);
             color: white;
@@ -385,39 +381,43 @@
             font-weight: bold;
             cursor: pointer;
         }
-        
-        .btn-close:hover {
-            background: #b91c1c;
-        }
-
     </style>
 </head>
 <body>
+
+    <div id="splash-screen">
+        <img src="IP.png" alt="Innovation Program">
+    </div>
 
     <div id="qrModal" class="modal-overlay">
         <div class="modal-content">
             <h3 id="qrTitle">QR Generado</h3>
             <img id="qrImage" src="" alt="Código QR">
             <p>Guarde este código para acceder al estacionamiento.</p>
-            <button class="btn-close" onclick="cerrarModal()">Cerrar y Confirmar</button>
+            <button class="btn-close" onclick="cerrarModal('qrModal')">Cerrar y Confirmar</button>
+        </div>
+    </div>
+
+    <div id="timerModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="color: var(--primary-blue);">Verificación de Espacio</h3>
+            <p>¿Necesitas aún este espacio (<span id="timerSpaceId"></span>)?</p>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+                <button class="btn-action btn-secondary" onclick="accionTemporizador('liberar')">Desocupar</button>
+                <button class="btn-action btn-primary" onclick="accionTemporizador('extender')">+ 30 Seg</button>
+            </div>
         </div>
     </div>
 
     <aside class="sidebar">
         <div class="logo-container">
-            <img src="innova.jpg" alt="Logo Innova">
+            <img src="innova.jpg" alt="Logo" onerror="this.src='https://via.placeholder.com/45'">
             <h1>Innova<br>Schools</h1>
         </div>
         <nav class="nav-menu">
-            <a href="#" class="nav-item active" onclick="activarMenu(this)">
-                <span class="material-icons-round">map</span> Mapa en Vivo
-            </a>
-            <a href="#" class="nav-item" onclick="activarMenu(this)">
-                <span class="material-icons-round">grid_view</span> Asignación de estacionamiento
-            </a>
-            <a href="#" class="nav-item" onclick="activarMenu(this)">
-                <span class="material-icons-round">qr_code_scanner</span> Control de QR
-            </a>
+            <a href="#" class="nav-item active" onclick="cambiarMenuActivo(event, this)"><span class="material-icons-round">map</span> Mapa Satelital</a>
+            <a href="#" class="nav-item" onclick="cambiarMenuActivo(event, this)"><span class="material-icons-round">grid_view</span> Asignación</a>
+            <a href="#" class="nav-item" onclick="cambiarMenuActivo(event, this)"><span class="material-icons-round">qr_code_scanner</span> Control de QR</a>
         </nav>
 
         <div class="team-box">
@@ -436,17 +436,15 @@
     </aside>
 
     <main class="main-content">
-        
         <header class="top-header">
-            <h2>Bienvenido</h2>
+            <h2>Panel Principal</h2>
         </header>
 
         <div class="dashboard-grid">
-            
             <div class="map-card">
                 <div class="map-toolbar">
-                    <button class="map-btn active" onclick="activarBotonMapa(this)">Satélite</button>
-                    <button class="map-btn" onclick="activarBotonMapa(this)">Zonas Asignadas</button>
+                    <button class="map-btn active" onclick="cambiarBotonMapa(this)">Satélite</button>
+                    <button class="map-btn" onclick="cambiarBotonMapa(this)">Zonas Asignadas</button>
                 </div>
                 <div class="map-container" id="mapa-gratis">
                     <div class="parking-grid" id="terreno-exterior"></div>
@@ -456,29 +454,18 @@
             <div class="table-card" style="grid-column: 1;">
                 <div class="card-header">
                     <h3>Lugares de Estacionamiento</h3>
-                    <p>Sincronización en tiempo real con los cuadrantes del mapa satelital.</p>
                 </div>
                 <div style="max-height: 380px; overflow-y: auto;">
-                    <table>
+                    <table id="parkingTable">
                         <thead>
                             <tr>
                                 <th>Espacio ID</th>
                                 <th>Zona</th>
-                                <th>Estado Actual</th>
+                                <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr><td><strong>Estacionamiento A1</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="A1" onclick="generarQR(this, 'A1')">Generar QR / Ocupar</button></td></tr>
-                            <tr><td><strong>Estacionamiento A2</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="A2" onclick="generarQR(this, 'A2')">Generar QR / Ocupar</button></td></tr>
-                            <tr><td><strong>Estacionamiento A3</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="A3" onclick="generarQR(this, 'A3')">Generar QR / Ocupar</button></td></tr>
-                            <tr><td><strong>Estacionamiento A4</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="A4" onclick="generarQR(this, 'A4')">Generar QR / Ocupar</button></td></tr>
-                            <tr><td><strong>Estacionamiento A5</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="A5" onclick="generarQR(this, 'A5')">Generar QR / Ocupar</button></td></tr>
-                            <tr><td><strong>Estacionamiento B1</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="B1" onclick="generarQR(this, 'B1')">Generar QR / Ocupar</button></td></tr>
-                            <tr><td><strong>Estacionamiento B2</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="B2" onclick="generarQR(this, 'B2')">Generar QR / Ocupar</button></td></tr>
-                            <tr><td><strong>Estacionamiento B3</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="B3" onclick="generarQR(this, 'B3')">Generar QR / Ocupar</button></td></tr>
-                            <tr><td><strong>Estacionamiento B4</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="B4" onclick="generarQR(this, 'B4')">Generar QR / Ocupar</button></td></tr>
-                            <tr><td><strong>Estacionamiento B5</strong></td><td>Zona de Estacionamiento</td><td><span class="badge parked">Libre</span></td><td><button class="btn-action btn-primary" data-id="B5" onclick="generarQR(this, 'B5')">Generar QR / Ocupar</button></td></tr>
+                        <tbody id="tableBody">
                         </tbody>
                     </table>
                 </div>
@@ -487,112 +474,189 @@
             <div class="table-card" style="grid-column: 2;">
                 <div class="card-header">
                     <h3>Control de usuarios</h3>
-                    <p>Usuarios intentando salir de casa ahora mismo.</p>
                 </div>
                 <div style="max-height: 380px; overflow-y: auto;">
-                    <table>
+                    <table id="usersTable">
                         <thead>
                             <tr>
                                 <th>Usuario en App</th>
                                 <th>Estado de Salida</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr><td>Usuario A1</td><td><span id="status-user-A1" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
-                            <tr><td>Usuario A2</td><td><span id="status-user-A2" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
-                            <tr><td>Usuario A3</td><td><span id="status-user-A3" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
-                            <tr><td>Usuario A4</td><td><span id="status-user-A4" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
-                            <tr><td>Usuario A5</td><td><span id="status-user-A5" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
-                            <tr><td>Usuario B1</td><td><span id="status-user-B1" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
-                            <tr><td>Usuario B2</td><td><span id="status-user-B2" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
-                            <tr><td>Usuario B3</td><td><span id="status-user-B3" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
-                            <tr><td>Usuario B4</td><td><span id="status-user-B4" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
-                            <tr><td>Usuario B5</td><td><span id="status-user-B5" class="badge parked">Luz Verde: Salir Ahora</span></td></tr>
+                        <tbody id="usersBody">
                         </tbody>
                     </table>
                 </div>
             </div>
-
         </div>
     </main>
 
     <script>
-        function activarMenu(elemento) {
+        function cambiarMenuActivo(event, elemento) {
+            event.preventDefault();
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             elemento.classList.add('active');
         }
 
-        function activarBotonMapa(elemento) {
+        function cambiarBotonMapa(elemento) {
             document.querySelectorAll('.map-btn').forEach(el => el.classList.remove('active'));
             elemento.classList.add('active');
         }
 
-        // Función centralizada para cambiar el estado en todos los lugares (Botón, Mapa y Usuario)
-        function cambiarEstadoEspacio(espacioId, isOccupied) {
-            // 1. Sincronizar minimapa flotante
-            const mapSpots = Array.from(document.querySelectorAll('.spot'));
-            const mapSpot = mapSpots.find(spot => spot.textContent === espacioId);
-            if(mapSpot) {
-                mapSpot.className = isOccupied ? 'spot red' : 'spot green';
-                mapSpot.title = isOccupied ? `Estacionamiento ${espacioId} - Ocupado` : `Estacionamiento ${espacioId} - Libre`;
-            }
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            databaseURL: "https://TU_PROYECTO-default-rtdb.firebaseio.com",
+            projectId: "TU_PROYECTO",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "TU_MESSAGING_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
 
-            // 2. Sincronizar botón de la tabla principal
-            const btn = document.querySelector(`button[data-id="${espacioId}"]`);
-            if (btn) {
-                const row = btn.closest('tr');
-                const badge = row.querySelector('.badge');
-                if (isOccupied) {
-                    btn.className = 'btn-action btn-secondary';
-                    btn.textContent = 'Liberar Espacio';
-                    badge.className = 'badge transit';
-                    badge.textContent = 'Ocupado';
-                } else {
-                    btn.className = 'btn-action btn-primary';
-                    btn.textContent = 'Generar QR / Ocupar';
-                    badge.className = 'badge parked';
-                    badge.textContent = 'Libre';
-                }
-            }
+        const espacios = ['A1', 'A2', 'A3', 'A4', 'A5', 'B1', 'B2', 'B3', 'B4', 'B5'];
+        let temporizadoresLocales = {};
+        let espacioEnPregunta = null;
 
-            // 3. Sincronizar la Luz del Usuario automáticamente
-            const userBadge = document.getElementById(`status-user-${espacioId}`);
-            if (userBadge) {
-                if (isOccupied) {
-                    userBadge.className = 'badge transit';
-                    userBadge.textContent = 'Luz Roja: Esperar';
-                } else {
-                    userBadge.className = 'badge parked';
-                    userBadge.textContent = 'Luz Verde: Salir Ahora';
-                }
-            }
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.classList.add('hidden-splash');
+                setTimeout(() => splash.style.display = 'none', 500);
+            }, 2000);
+
+            generarEstructuraDOM();
+            inicializarMapa();
+            escucharFirebase();
+        });
+
+        function generarEstructuraDOM() {
+            const tableBody = document.getElementById('tableBody');
+            const usersBody = document.getElementById('usersBody');
+            const gridContainer = document.getElementById('terreno-exterior');
+
+            espacios.forEach(id => {
+                tableBody.innerHTML += `
+                    <tr id="row-${id}">
+                        <td><strong>Estacionamiento ${id}</strong></td>
+                        <td>Zona</td>
+                        <td><span id="badge-${id}" class="badge parked">Libre</span></td>
+                        <td><button id="btn-${id}" class="btn-action btn-primary" onclick="interactuarEspacio('${id}')">Generar QR / Ocupar</button></td>
+                    </tr>`;
+                
+                usersBody.innerHTML += `
+                    <tr>
+                        <td>Usuario ${id}</td>
+                        <td><span id="user-${id}" class="badge parked">Libre</span></td>
+                    </tr>`;
+
+                const div = document.createElement('div');
+                div.id = `spot-${id}`;
+                div.className = `spot green`;
+                div.textContent = id;
+                div.onclick = () => interactuarEspacio(id);
+                gridContainer.appendChild(div);
+            });
         }
 
-        // Evento que se dispara desde el botón de la tabla
-        function generarQR(btn, espacioId) {
-            if (btn.classList.contains('btn-primary')) {
-                // Abre el modal y genera el QR
-                document.getElementById('qrTitle').textContent = `Acceso: Estacionamiento ${espacioId}`;
-                document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=Reserva_Innova_${espacioId}`;
+        function interactuarEspacio(id) {
+            const btn = document.getElementById(`btn-${id}`);
+            const estaLibre = btn.classList.contains('btn-primary');
+            
+            if (estaLibre) {
+                document.getElementById('qrTitle').textContent = `Acceso: Estacionamiento ${id}`;
+                document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=Reserva_Innova_${id}`;
                 document.getElementById('qrModal').style.display = 'flex';
                 
-                // Cambia estado a ocupado
-                cambiarEstadoEspacio(espacioId, true);
+                actualizarEstadoFirebase(id, true);
+                iniciarTemporizador(id, 60000);
             } else {
-                // Si ya está ocupado y se presiona, se libera el espacio
-                cambiarEstadoEspacio(espacioId, false);
+                actualizarEstadoFirebase(id, false);
+                limpiarTemporizador(id);
             }
         }
 
-        function cerrarModal() {
-            document.getElementById('qrModal').style.display = 'none';
+        function actualizarEstadoFirebase(id, ocupado) {
+            database.ref('estacionamientos/' + id).set({ estado: ocupado });
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const map = L.map('mapa-gratis').setView([-6.827473121649184, -79.92381392291851], 19);
+        function escucharFirebase() {
+            database.ref('estacionamientos').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    Object.keys(data).forEach(id => {
+                        sincronizarUI(id, data[id].estado);
+                    });
+                }
+            });
+        }
 
+        function sincronizarUI(id, ocupado) {
+            const btn = document.getElementById(`btn-${id}`);
+            const badge = document.getElementById(`badge-${id}`);
+            const userBadge = document.getElementById(`user-${id}`);
+            const spot = document.getElementById(`spot-${id}`);
+
+            if (!btn || !badge || !userBadge || !spot) return;
+
+            if (ocupado) {
+                btn.className = 'btn-action btn-secondary';
+                btn.textContent = 'Liberar Espacio';
+                badge.className = 'badge transit';
+                badge.textContent = 'Ocupado';
+                userBadge.className = 'badge transit';
+                userBadge.textContent = 'Ocupado';
+                spot.className = 'spot red';
+            } else {
+                btn.className = 'btn-action btn-primary';
+                btn.textContent = 'Generar QR / Ocupar';
+                badge.className = 'badge parked';
+                badge.textContent = 'Libre';
+                userBadge.className = 'badge parked';
+                userBadge.textContent = 'Libre';
+                spot.className = 'spot green';
+            }
+        }
+
+        function iniciarTemporizador(id, tiempoMs) {
+            limpiarTemporizador(id);
+            temporizadoresLocales[id] = setTimeout(() => {
+                espacioEnPregunta = id;
+                document.getElementById('timerSpaceId').textContent = id;
+                document.getElementById('timerModal').style.display = 'flex';
+            }, tiempoMs);
+        }
+
+        function limpiarTemporizador(id) {
+            if (temporizadoresLocales[id]) {
+                clearTimeout(temporizadoresLocales[id]);
+                delete temporizadoresLocales[id];
+            }
+        }
+
+        function accionTemporizador(accion) {
+            document.getElementById('timerModal').style.display = 'none';
+            if (accion === 'liberar') {
+                actualizarEstadoFirebase(espacioEnPregunta, false);
+                limpiarTemporizador(espacioEnPregunta);
+            } else if (accion === 'extender') {
+                iniciarTemporizador(espacioEnPregunta, 30000);
+            }
+            espacioEnPregunta = null;
+        }
+
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function inicializarMapa() {
+            const map = L.map('mapa-gratis').setView([-6.827473121649184, -79.92381392291851], 19);
+            
             L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: 'Tiles &copy; Esri',
                 maxZoom: 19
             }).addTo(map);
 
@@ -622,37 +686,7 @@
                     .addTo(map)
                     .bindPopup(`<b>Estacionamiento ${spot.name}</b><br>Zona de Estacionamiento`);
             });
-
-            const gridContainer = document.getElementById('terreno-exterior');
-            
-            const spotsData = [
-                { id: 'A1', status: 'green' }, { id: 'A2', status: 'green' }, { id: 'A3', status: 'green' },
-                { id: 'A4', status: 'green' }, { id: 'A5', status: 'green' }, { id: 'B1', status: 'green' },
-                { id: 'B2', status: 'green' }, { id: 'B3', status: 'green' }, { id: 'B4', status: 'green' },
-                { id: 'B5', status: 'green' }
-            ];
-
-            spotsData.forEach(spot => {
-                const div = document.createElement('div');
-                div.className = `spot ${spot.status}`;
-                div.textContent = spot.id;
-                div.title = `Estacionamiento ${spot.id} - Libre`;
-                
-                div.addEventListener('click', () => {
-                    if(div.classList.contains('green')) {
-                        if(confirm(`El espacio ${spot.id} está libre. ¿Deseas marcarlo como ocupado en tiempo real?`)) {
-                            cambiarEstadoEspacio(spot.id, true);
-                        }
-                    } else if (div.classList.contains('red')) {
-                        if(confirm(`El espacio ${spot.id} está ocupado. ¿Deseas liberarlo?`)) {
-                            cambiarEstadoEspacio(spot.id, false);
-                        }
-                    }
-                });
-
-                gridContainer.appendChild(div);
-            });
-        });
+        }
     </script>
 </body>
 </html>
