@@ -501,7 +501,7 @@
             <p>Ya pasaron 1:30 minutos desde que reservaste el espacio.<br><br><b>¿Sigues necesitando el lugar?</b></p>
             <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
                 <button class="btn-action" style="background: var(--status-red); color: white;" onclick="desocuparDesdeAviso()">Desocupar</button>
-                <button class="btn-action btn-primary" onclick="mantenerEspacio()">Seguir usando</button>
+                <button class="btn-action btn-primary" onclick="extenderTiempo()">+ 30 Seg</button>
             </div>
         </div>
     </div>
@@ -648,9 +648,10 @@
         let miPlaca = "";
         let estadoGlobal = {};
         
-        // Variables para el control de la ventana de aviso
-        let avisoMostrado = false;
+        // Variables para los relojes locales del usuario
         let miEspacioActual = null; 
+        let timeoutAviso = null;
+        let timeoutLiberacion = null;
 
         window.addEventListener('load', () => {
             setTimeout(() => {
@@ -726,9 +727,24 @@
             const estaLibre = btn.classList.contains('btn-primary');
             
             if (estaLibre) {
+                // Validación 1 Carro = 1 Espacio
+                let yaTieneEspacio = false;
+                Object.keys(estadoGlobal).forEach(key => {
+                    if (estadoGlobal[key] && estadoGlobal[key].estado === true && estadoGlobal[key].placa === miPlaca) {
+                        yaTieneEspacio = true;
+                    }
+                });
+
+                if (yaTieneEspacio) {
+                    alert("Ya tienes un espacio reservado. Libéralo antes de ocupar otro.");
+                    return;
+                }
+
                 actualizarEstadoFirebase(id, true, miPlaca);
+                iniciarTemporizadoresLocales(id);
             } else {
                 actualizarEstadoFirebase(id, false, "");
+                limpiarTemporizadoresLocales();
             }
         }
 
@@ -738,20 +754,9 @@
             if (ocupado) {
                 refEspacio.onDisconnect().set({ estado: false, placa: "", tiempo: 0 });
                 refEspacio.set({ estado: true, placa: placaAsignada, tiempo: Date.now() });
-                
-                // Reiniciamos variables de aviso al ocupar
-                avisoMostrado = false;
-                miEspacioActual = id;
             } else {
                 refEspacio.onDisconnect().cancel();
                 refEspacio.set({ estado: false, placa: "", tiempo: 0 });
-                
-                // Si la placa liberó su propio espacio, limpiamos la alerta por si estaba abierta
-                if (id === miEspacioActual) {
-                    cerrarAviso();
-                    avisoMostrado = false;
-                    miEspacioActual = null;
-                }
             }
         }
 
@@ -809,64 +814,81 @@
             }
         }
 
-        // SISTEMA DE LIMPIEZA AUTOMÁTICA Y AVISO DE TIEMPO
-        function iniciarLimpiezaAutomatica() {
-            setInterval(() => {
-                if (miPlaca === "") return;
+        // SISTEMA DE TIEMPOS LOCALES (Pantalla del dueño)
+        function iniciarTemporizadoresLocales(id) {
+            limpiarTemporizadoresLocales();
+            miEspacioActual = id;
 
-                const tiempoMaximo = 150000; // 2 minutos y 30 seg (en milisegundos)
-                const tiempoAviso = 90000;   // 1 minuto y 30 seg (en milisegundos)
-                const ahora = Date.now();
+            // Mostrar el aviso exacto a los 90 segundos (1:30 min)
+            timeoutAviso = setTimeout(() => {
+                document.getElementById('warningModal').style.display = 'flex';
+            }, 90000);
 
-                Object.keys(estadoGlobal).forEach(id => {
-                    const espacio = estadoGlobal[id];
-                    
-                    if (espacio && espacio.estado === true && espacio.tiempo) {
-                        const tiempoTranscurrido = ahora - espacio.tiempo;
-
-                        // Solo procesamos los tiempos si el dueño de ese espacio soy yo
-                        if (espacio.placa === miPlaca) {
-                            miEspacioActual = id;
-
-                            // Si pasaron 1:30 min y aún no se muestra el aviso, lo mostramos
-                            if (tiempoTranscurrido >= tiempoAviso && tiempoTranscurrido < tiempoMaximo && !avisoMostrado) {
-                                document.getElementById('warningModal').style.display = 'flex';
-                                avisoMostrado = true;
-                            }
-                        }
-
-                        // Liberación forzosa a los 2:30 min para CUALQUIERA
-                        if (tiempoTranscurrido >= tiempoMaximo) {
-                            database.ref('estacionamientos/' + id).set({ estado: false, placa: "", tiempo: 0 });
-                            
-                            // Si era mi espacio el que expiró, oculto la ventana por si seguía abierta
-                            if (espacio.placa === miPlaca) {
-                                cerrarAviso();
-                                avisoMostrado = false;
-                                miEspacioActual = null;
-                            }
-                        }
-                    }
-                });
-            }, 5000); 
+            // Liberación automática y forzosa a los 150 segundos (2:30 min)
+            timeoutLiberacion = setTimeout(() => {
+                document.getElementById('warningModal').style.display = 'none';
+                if (miEspacioActual === id) {
+                    actualizarEstadoFirebase(id, false, "");
+                    miEspacioActual = null;
+                }
+            }, 150000);
         }
 
-        // Funciones para los botones de la nueva ventana de Aviso
-        function cerrarAviso() {
+        function limpiarTemporizadoresLocales() {
+            clearTimeout(timeoutAviso);
+            clearTimeout(timeoutLiberacion);
             document.getElementById('warningModal').style.display = 'none';
+            miEspacioActual = null;
         }
 
         function desocuparDesdeAviso() {
             if (miEspacioActual) {
                 actualizarEstadoFirebase(miEspacioActual, false, "");
             }
-            cerrarAviso();
+            limpiarTemporizadoresLocales();
         }
 
-        function mantenerEspacio() {
-            cerrarAviso();
-            // No cambiamos "avisoMostrado" a false para que no vuelva a aparecer.
-            // El reloj oculto seguirá contando el minuto restante hasta llegar a 2:30.
+        function extenderTiempo() {
+            document.getElementById('warningModal').style.display = 'none';
+            
+            // Cancelamos el viejo límite de 2:30
+            clearTimeout(timeoutLiberacion);
+            
+            // Damos exactamente 30 segundos extra
+            timeoutLiberacion = setTimeout(() => {
+                if (miEspacioActual) {
+                    actualizarEstadoFirebase(miEspacioActual, false, "");
+                    miEspacioActual = null;
+                }
+            }, 30000);
+
+            if (miEspacioActual) {
+                // Truco maestro: Engañamos a Firebase diciendo que el espacio empezó hace 2 minutos (120,000 ms).
+                // Así, el limpiador global de 2:30 min de fondo dejará vivir este espacio exactamente 30 segundos más.
+                database.ref('estacionamientos/' + miEspacioActual).update({ tiempo: Date.now() - 120000 });
+            }
+        }
+
+        // LIMPIADOR GLOBAL DE SEGURIDAD (Por si cierran la página)
+        function iniciarLimpiezaAutomatica() {
+            setInterval(() => {
+                if (miPlaca === "") return;
+
+                const tiempoMaximo = 150000; // 2:30 min
+                const ahora = Date.now();
+
+                Object.keys(estadoGlobal).forEach(id => {
+                    const espacio = estadoGlobal[id];
+                    if (espacio && espacio.estado === true && espacio.tiempo) {
+                        const tiempoTranscurrido = ahora - espacio.tiempo;
+                        
+                        // Si cualquier espacio sobrepasa los 2:30 min en la base de datos, lo liberamos
+                        if (tiempoTranscurrido >= tiempoMaximo) {
+                            database.ref('estacionamientos/' + id).set({ estado: false, placa: "", tiempo: 0 });
+                        }
+                    }
+                });
+            }, 5000); 
         }
 
         function inicializarMapa() {
