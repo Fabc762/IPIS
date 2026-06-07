@@ -85,20 +85,30 @@
             padding: 24px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: space-between;
             border-bottom: 1px solid var(--border-color);
         }
 
-        .logo-container img {
+        .logo-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-left img {
             width: 45px;
             height: auto;
         }
 
-        .logo-container h1 {
+        .logo-left h1 {
             font-size: 18px;
             color: var(--primary-blue);
             font-weight: 700;
             line-height: 1.2;
+        }
+
+        .mobile-team {
+            display: none; 
         }
 
         .nav-menu {
@@ -245,7 +255,7 @@
             top: 20px;
             right: 20px;
             display: grid;
-            grid-template-columns: repeat(5, 40px); /* Ajustado a 5 columnas para A, B, C, D, E */
+            grid-template-columns: repeat(6, 40px);
             gap: 4px;
             background: rgba(0,0,0,0.4);
             padding: 8px;
@@ -360,6 +370,7 @@
             text-align: center;
             box-shadow: var(--shadow-lg);
             width: 320px;
+            max-width: 90%;
             display: flex;
             flex-direction: column;
             gap: 16px;
@@ -380,14 +391,90 @@
             border-color: var(--primary-blue);
         }
 
-        .btn-close {
-            background: var(--status-red);
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
+        /* --- MEDIA QUERIES PARA CELULAR --- */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                height: auto;
+                overflow-y: auto;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 10px 15px;
+            }
+
+            .logo-container {
+                padding: 0;
+                border-bottom: none;
+                width: 100%;
+            }
+
+            .mobile-team {
+                display: flex !important;
+                flex-direction: column;
+                align-items: flex-end;
+                text-align: right;
+            }
+
+            .mobile-team-title {
+                font-size: 12px;
+                color: var(--primary-blue);
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .mobile-team-names {
+                font-size: 9px;
+                color: var(--text-muted);
+                max-width: 120px;
+                line-height: 1.2;
+                margin-top: 2px;
+            }
+
+            .nav-menu, .top-header, .map-toolbar, .team-box {
+                display: none !important;
+            }
+
+            .main-content {
+                overflow-y: visible;
+            }
+
+            .dashboard-grid {
+                display: flex;
+                flex-direction: column;
+                padding: 15px;
+                gap: 20px;
+            }
+
+            .map-card {
+                height: 350px;
+            }
+
+            .parking-grid.mobile-grid {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 0 auto;
+                transform: scale(0.95);
+                transform-origin: center;
+                justify-content: center;
+                box-shadow: var(--shadow-md);
+            }
+
+            .table-card > div {
+                overflow-x: auto;
+            }
+            
+            th, td {
+                white-space: nowrap;
+            }
         }
     </style>
 </head>
@@ -402,26 +489,24 @@
             <h3 style="color: var(--primary-blue);">Identificación de Vehículo</h3>
             <p>Por favor, ingresa el número de tu placa para acceder al sistema y reservar un espacio.</p>
             <input type="text" id="inputPlaca" class="input-placa" placeholder="EJ: ABC-123" maxlength="8">
-            <button class="btn-action btn-primary" onclick="registrarPlaca()">Entrar al Sistema</button>
-        </div>
-    </div>
-
-    <div id="timerModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3 style="color: var(--primary-blue);">Verificación de Espacio</h3>
-            <p>¿Necesitas aún este espacio (<span id="timerSpaceId"></span>)?</p>
-            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
-                <button class="btn-action btn-secondary" onclick="accionTemporizador('liberar')">Desocupar</button>
-                <button class="btn-action btn-primary" onclick="accionTemporizador('extender')">+ 30 Seg</button>
-            </div>
+            <button class="btn-action btn-primary" onclick="registrarPlaca()">Ingresar</button>
         </div>
     </div>
 
     <aside class="sidebar">
         <div class="logo-container">
-            <img src="innova.jpg" alt="Logo" onerror="this.src='https://via.placeholder.com/45'">
-            <h1>Innova<br>Schools</h1>
+            <div class="logo-left">
+                <img src="innova.jpg" alt="Logo" onerror="this.src='https://via.placeholder.com/45'">
+                <h1>Innova<br>Schools</h1>
+            </div>
+            <div class="mobile-team">
+                <div class="mobile-team-title">
+                    <span class="material-icons-round" style="font-size: 14px;">groups</span> Grupo 5
+                </div>
+                <div class="mobile-team-names">Gianella, Pamela, Fernando, Fabrizio, Adolfo</div>
+            </div>
         </div>
+        
         <nav class="nav-menu">
             <a href="#" class="nav-item active" onclick="cambiarMenuActivo(event, this)"><span class="material-icons-round">map</span> Mapa Satelital</a>
             <a href="#" class="nav-item" onclick="cambiarMenuActivo(event, this)"><span class="material-icons-round">grid_view</span> Asignación</a>
@@ -510,6 +595,19 @@
             elemento.classList.add('active');
         }
 
+        function ajustarVistaMovil() {
+            const grid = document.getElementById('terreno-exterior');
+            if (window.innerWidth <= 768) {
+                document.querySelector('.dashboard-grid').appendChild(grid);
+                grid.classList.add('mobile-grid');
+            } else {
+                document.getElementById('mapa-gratis').appendChild(grid);
+                grid.classList.remove('mobile-grid');
+            }
+        }
+        
+        window.addEventListener('resize', ajustarVistaMovil);
+
         const firebaseConfig = {
             apiKey: "AIzaSyCkrK_7WxbIqJL20uMssYx-1b3BS5punQI",
             authDomain: "innovaparking-b7876.firebaseapp.com",
@@ -525,16 +623,14 @@
         }
         const database = firebase.database();
 
-        // Se agregaron las series D y E completas
         const espacios = [
             'A1', 'A2', 'A3', 'A4', 'A5', 
             'B1', 'B2', 'B3', 'B4', 'B5', 
             'C1', 'C2', 'C3', 'C4', 'C5', 
             'D1', 'D2', 'D3', 'D4', 'D5', 
-            'E1', 'E2', 'E3', 'E4', 'E5'
+            'E1', 'E2', 'E3', 'E4', 'E5',
+            'F1', 'F2', 'F3', 'F4', 'F5'
         ];
-        let temporizadoresLocales = {};
-        let espacioEnPregunta = null;
         
         let miPlaca = "";
         let estadoGlobal = {};
@@ -552,6 +648,8 @@
             generarEstructuraDOM();
             inicializarMapa();
             escucharFirebase();
+            ajustarVistaMovil();
+            iniciarLimpiezaAutomatica();
         });
 
         function registrarPlaca() {
@@ -613,15 +711,23 @@
             
             if (estaLibre) {
                 actualizarEstadoFirebase(id, true, miPlaca);
-                iniciarTemporizador(id, 60000);
             } else {
                 actualizarEstadoFirebase(id, false, "");
-                limpiarTemporizador(id);
             }
         }
 
         function actualizarEstadoFirebase(id, ocupado, placaAsignada) {
-            database.ref('estacionamientos/' + id).set({ estado: ocupado, placa: placaAsignada });
+            const refEspacio = database.ref('estacionamientos/' + id);
+            
+            if (ocupado) {
+                // Al ocupar, registramos la hora exacta en el servidor y preparamos onDisconnect
+                refEspacio.onDisconnect().set({ estado: false, placa: "", tiempo: 0 });
+                refEspacio.set({ estado: true, placa: placaAsignada, tiempo: Date.now() });
+            } else {
+                // Al liberar, limpiamos todo
+                refEspacio.onDisconnect().cancel();
+                refEspacio.set({ estado: false, placa: "", tiempo: 0 });
+            }
         }
 
         function escucharFirebase() {
@@ -678,31 +784,26 @@
             }
         }
 
-        function iniciarTemporizador(id, tiempoMs) {
-            limpiarTemporizador(id);
-            temporizadoresLocales[id] = setTimeout(() => {
-                espacioEnPregunta = id;
-                document.getElementById('timerSpaceId').textContent = id;
-                document.getElementById('timerModal').style.display = 'flex';
-            }, tiempoMs);
-        }
+        // SISTEMA DE LIMPIEZA AUTOMÁTICA (AUTO-RELEASE)
+        function iniciarLimpiezaAutomatica() {
+            setInterval(() => {
+                // Si el usuario no ha ingresado placa, no hace limpieza
+                if (miPlaca === "") return;
 
-        function limpiarTemporizador(id) {
-            if (temporizadoresLocales[id]) {
-                clearTimeout(temporizadoresLocales[id]);
-                delete temporizadoresLocales[id];
-            }
-        }
+                const tiempoMaximo = 150000; // 2 minutos y 30 segundos en milisegundos
+                const ahora = Date.now();
 
-        function accionTemporizador(accion) {
-            document.getElementById('timerModal').style.display = 'none';
-            if (accion === 'liberar') {
-                actualizarEstadoFirebase(espacioEnPregunta, false, "");
-                limpiarTemporizador(espacioEnPregunta);
-            } else if (accion === 'extender') {
-                iniciarTemporizador(espacioEnPregunta, 30000);
-            }
-            espacioEnPregunta = null;
+                Object.keys(estadoGlobal).forEach(id => {
+                    const espacio = estadoGlobal[id];
+                    // Si el espacio está ocupado y tiene un tiempo de registro
+                    if (espacio && espacio.estado === true && espacio.tiempo) {
+                        if (ahora - espacio.tiempo > tiempoMaximo) {
+                            // Han pasado más de 2:30 min. Forzar liberación general.
+                            database.ref('estacionamientos/' + id).set({ estado: false, placa: "", tiempo: 0 });
+                        }
+                    }
+                });
+            }, 5000); // Revisa silenciosamente cada 5 segundos
         }
 
         function inicializarMapa() {
@@ -719,7 +820,6 @@
                 popupAnchor: [0, -21]     
             });
 
-            // Se agregaron las coordenadas de las series D y E
             const parkingSpotsCoords = [
                 { lat: -6.826896952567946, lng: -79.92368676791544, name: "A1" },
                 { lat: -6.82693025235926,  lng: -79.92373774503297, name: "A2" },
@@ -749,7 +849,13 @@
                 { lat: -6.827241754890228, lng: -79.9240149248209,  name: "E2" },
                 { lat: -6.827219783574814, lng: -79.92398944383807, name: "E3" },
                 { lat: -6.82718649370104,  lng: -79.92412556593058, name: "E4" },
-                { lat: -6.827162524990505, lng: -79.92408332114326, name: "E5" }
+                { lat: -6.827162524990505, lng: -79.92408332114326, name: "E5" },
+
+                { lat: -6.827119425936285, lng: -79.92382847930676, name: "F1" },
+                { lat: -6.827102780996192, lng: -79.92380098666739, name: "F2" },
+                { lat: -6.8270808096744044, lng: -79.92377818789328, name: "F3" },
+                { lat: -6.827052846172469, lng: -79.92373594310592, name: "F4" },
+                { lat: -6.827001557816475, lng: -79.92387507280762, name: "F5" }
             ];
 
             parkingSpotsCoords.forEach((spot) => {
