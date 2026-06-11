@@ -376,6 +376,47 @@
             gap: 16px;
         }
 
+        .sub-modal-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            width: 380px;
+            max-width: 95%;
+            text-align: center;
+            padding-bottom: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+        .sub-header-img {
+            width: 100%;
+            height: 140px;
+            background: url('https://media.licdn.com/dms/image/v2/C561BAQEbRzAmD-c2rA/company-background_10000/company-background_10000/0/1651771657912/innova_schools_mx_cover?e=2147483647&v=beta&t=clcLftLkaCxqbgdKL-_qMBA8L3xWfvA9CCqkKN_-bmc') center/cover;
+            background-position: center;
+        }
+        .sub-cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 20px;
+        }
+        .sub-card {
+            padding: 16px 10px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .sub-card:hover { transform: scale(1.05); box-shadow: var(--shadow-md); }
+        .sub-card span { font-size: 12px; font-weight: normal; opacity: 0.9; }
+        .sub-blue { background-color: var(--primary-blue); }
+        .sub-orange { background-color: #F57C00; }
+        .sub-green { background-color: var(--accent-green); }
+        .sub-white { background-color: white; color: var(--primary-blue); border: 2px solid var(--primary-blue); }
+
         .input-placa {
             padding: 12px;
             font-size: 16px;
@@ -386,95 +427,33 @@
             font-weight: 600;
             outline: none;
         }
-
         .input-placa:focus {
             border-color: var(--primary-blue);
         }
+        .btn-close {
+            background: var(--status-red);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-        /* --- MEDIA QUERIES PARA CELULAR --- */
         @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-                height: auto;
-                overflow-y: auto;
-            }
-
-            .sidebar {
-                width: 100%;
-                height: auto;
-                flex-direction: row;
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-                padding: 10px 15px;
-            }
-
-            .logo-container {
-                padding: 0;
-                border-bottom: none;
-                width: 100%;
-            }
-
-            .mobile-team {
-                display: flex !important;
-                flex-direction: column;
-                align-items: flex-end;
-                text-align: right;
-            }
-
-            .mobile-team-title {
-                font-size: 12px;
-                color: var(--primary-blue);
-                font-weight: 700;
-                display: flex;
-                align-items: center;
-                gap: 4px;
-            }
-
-            .mobile-team-names {
-                font-size: 9px;
-                color: var(--text-muted);
-                max-width: 120px;
-                line-height: 1.2;
-                margin-top: 2px;
-            }
-
-            .nav-menu, .top-header, .map-toolbar, .team-box {
-                display: none !important;
-            }
-
-            .main-content {
-                overflow-y: visible;
-            }
-
-            .dashboard-grid {
-                display: flex;
-                flex-direction: column;
-                padding: 15px;
-                gap: 20px;
-            }
-
-            .map-card {
-                height: 350px;
-            }
-
-            .parking-grid.mobile-grid {
-                position: relative;
-                top: auto;
-                right: auto;
-                margin: 0 auto;
-                transform: scale(0.95);
-                transform-origin: center;
-                justify-content: center;
-                box-shadow: var(--shadow-md);
-            }
-
-            .table-card > div {
-                overflow-x: auto;
-            }
-            
-            th, td {
-                white-space: nowrap;
-            }
+            body { flex-direction: column; height: auto; overflow-y: auto; }
+            .sidebar { width: 100%; height: auto; flex-direction: row; border-right: none; border-bottom: 1px solid var(--border-color); padding: 10px 15px; }
+            .logo-container { padding: 0; border-bottom: none; width: 100%; }
+            .mobile-team { display: flex !important; flex-direction: column; align-items: flex-end; text-align: right; }
+            .mobile-team-title { font-size: 12px; color: var(--primary-blue); font-weight: 700; display: flex; align-items: center; gap: 4px; }
+            .mobile-team-names { font-size: 9px; color: var(--text-muted); max-width: 120px; line-height: 1.2; margin-top: 2px; }
+            .nav-menu, .top-header, .map-toolbar, .team-box { display: none !important; }
+            .main-content { overflow-y: visible; }
+            .dashboard-grid { display: flex; flex-direction: column; padding: 15px; gap: 20px; }
+            .map-card { height: 350px; }
+            .parking-grid.mobile-grid { position: relative; top: auto; right: auto; margin: 0 auto; transform: scale(0.95); transform-origin: center; justify-content: center; box-shadow: var(--shadow-md); }
+            .table-card > div { overflow-x: auto; }
+            th, td { white-space: nowrap; }
         }
     </style>
 </head>
@@ -484,12 +463,44 @@
         <img src="IP.png" alt="Innovation Program">
     </div>
 
+    <div id="subModal" class="modal-overlay">
+        <div class="sub-modal-container">
+            <div class="sub-header-img"></div>
+            <h2 style="color: var(--primary-blue); margin-top: 15px; font-size: 20px;">Innova 360 Parking</h2>
+            <p style="color: var(--text-muted); font-size: 14px; padding: 0 20px;">Selecciona un plan para poder reservar tus espacios de estacionamiento.</p>
+            
+            <div class="sub-cards-grid">
+                <div class="sub-card sub-blue" onclick="iniciarPago(5, '1 Mes')">S/ 5.00 <span>1 Mes</span></div>
+                <div class="sub-card sub-orange" onclick="iniciarPago(8, '2 Meses')">S/ 8.00 <span>2 Meses</span></div>
+                <div class="sub-card sub-green" onclick="iniciarPago(15, 'Permanente')">S/ 15.00 <span>Permanente</span></div>
+                <div class="sub-card sub-white" onclick="activarPruebaGratis()">Prueba Gratis <span>1 Mes</span></div>
+            </div>
+            
+            <button class="btn-secondary" style="width: 80%; padding: 10px; border-radius: 8px; font-weight: bold; border: none; cursor:pointer;" onclick="cerrarSubModal()">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="payModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="color: var(--primary-blue);">Pasarela de Pago</h3>
+            <p id="payDetails" style="font-size: 15px;"></p>
+            <input type="text" class="input-placa" placeholder="Número de Tarjeta" maxlength="16" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            <div style="display:flex; gap:10px;">
+                <input type="text" class="input-placa" placeholder="MM/YY" maxlength="5">
+                <input type="text" class="input-placa" placeholder="CVV" maxlength="3" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            </div>
+            <button class="btn-action btn-primary" onclick="procesarPagoExitoso()">Pagar de Forma Segura</button>
+            <button class="btn-close" onclick="document.getElementById('payModal').style.display='none'">Cancelar Pago</button>
+        </div>
+    </div>
+
     <div id="plateModal" class="modal-overlay">
         <div class="modal-content">
             <h3 style="color: var(--primary-blue);">Identificación de Vehículo</h3>
-            <p>Por favor, ingresa el número de tu placa para acceder al sistema y reservar un espacio.</p>
+            <p>¡Suscripción confirmada! Ingresa el número de tu placa para ocupar el espacio.</p>
             <input type="text" id="inputPlaca" class="input-placa" placeholder="EJ: ABC-123" maxlength="8">
-            <button class="btn-action btn-primary" onclick="registrarPlaca()">Ingresar</button>
+            <button class="btn-action btn-primary" onclick="registrarPlacaYOcupar()">Ocupar Espacio</button>
+            <button class="btn-close" onclick="document.getElementById('plateModal').style.display='none'">Cancelar</button>
         </div>
     </div>
 
@@ -647,8 +658,9 @@
         
         let miPlaca = "";
         let estadoGlobal = {};
+        let suscripcionActiva = false; 
+        let espacioPendiente = null;   
         
-        // Variables para los relojes locales del usuario
         let miEspacioActual = null; 
         let timeoutAviso = null;
         let timeoutLiberacion = null;
@@ -657,11 +669,8 @@
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 splash.classList.add('hidden-splash');
-                setTimeout(() => {
-                    splash.style.display = 'none';
-                    document.getElementById('plateModal').style.display = 'flex';
-                }, 500);
-            }, 2000);
+                setTimeout(() => splash.style.display = 'none', 500);
+            }, 2000); 
 
             generarEstructuraDOM();
             inicializarMapa();
@@ -669,22 +678,6 @@
             ajustarVistaMovil();
             iniciarLimpiezaAutomatica();
         });
-
-        function registrarPlaca() {
-            const input = document.getElementById('inputPlaca').value.trim().toUpperCase();
-            if(input.length >= 3) {
-                miPlaca = input;
-                document.getElementById('plateModal').style.display = 'none';
-                
-                Object.keys(estadoGlobal).forEach(id => {
-                    if (estadoGlobal[id]) {
-                        sincronizarUI(id, estadoGlobal[id].estado, estadoGlobal[id].placa);
-                    }
-                });
-            } else {
-                alert("Por favor, ingrese una placa válida.");
-            }
-        }
 
         function generarEstructuraDOM() {
             const tableBody = document.getElementById('tableBody');
@@ -716,48 +709,110 @@
         }
 
         function interactuarEspacio(id) {
-            if (miPlaca === "") {
-                alert("Debe registrar su placa primero.");
-                return;
-            }
-
             const btn = document.getElementById(`btn-${id}`);
-            if (btn.disabled) return;
+            if (btn && btn.disabled) return;
 
             const estaLibre = btn.classList.contains('btn-primary');
             
             if (estaLibre) {
-                // Validación 1 Carro = 1 Espacio
-                let yaTieneEspacio = false;
-                Object.keys(estadoGlobal).forEach(key => {
-                    if (estadoGlobal[key] && estadoGlobal[key].estado === true && estadoGlobal[key].placa === miPlaca) {
-                        yaTieneEspacio = true;
-                    }
-                });
-
-                if (yaTieneEspacio) {
-                    alert("Ya tienes un espacio reservado. Libéralo antes de ocupar otro.");
+                espacioPendiente = id; 
+                
+                if (!suscripcionActiva) {
+                    document.getElementById('subModal').style.display = 'flex';
                     return;
                 }
+                
+                if (miPlaca === "") {
+                    document.getElementById('plateModal').style.display = 'flex';
+                    return;
+                }
+                
+                procederAOcupar();
 
-                actualizarEstadoFirebase(id, true, miPlaca);
-                iniciarTemporizadoresLocales(id);
             } else {
                 actualizarEstadoFirebase(id, false, "");
                 limpiarTemporizadoresLocales();
             }
         }
 
-        function actualizarEstadoFirebase(id, ocupado, placaAsignada) {
-            const refEspacio = database.ref('estacionamientos/' + id);
+        function iniciarPago(monto, plan) {
+            document.getElementById('subModal').style.display = 'none';
+            document.getElementById('payDetails').innerHTML = `Plan seleccionado: <b>${plan}</b><br>Total a cobrar: <b>S/ ${monto}.00</b>`;
+            document.getElementById('payModal').style.display = 'flex';
+        }
+
+        function procesarPagoExitoso() {
+            document.getElementById('payModal').style.display = 'none';
+            suscripcionActiva = true;
             
-            if (ocupado) {
-                refEspacio.onDisconnect().set({ estado: false, placa: "", tiempo: 0 });
-                refEspacio.set({ estado: true, placa: placaAsignada, tiempo: Date.now() });
+            if (miPlaca === "") {
+                document.getElementById('plateModal').style.display = 'flex';
             } else {
-                refEspacio.onDisconnect().cancel();
-                refEspacio.set({ estado: false, placa: "", tiempo: 0 });
+                procederAOcupar();
             }
+        }
+
+        function activarPruebaGratis() {
+            document.getElementById('subModal').style.display = 'none';
+            suscripcionActiva = true;
+            
+            if (miPlaca === "") {
+                document.getElementById('plateModal').style.display = 'flex';
+            } else {
+                procederAOcupar();
+            }
+        }
+
+        function cerrarSubModal() {
+            document.getElementById('subModal').style.display = 'none';
+            espacioPendiente = null;
+        }
+
+        function registrarPlacaYOcupar() {
+            const input = document.getElementById('inputPlaca').value.trim().toUpperCase();
+            if(input.length >= 3) {
+                miPlaca = input;
+                document.getElementById('plateModal').style.display = 'none';
+                
+                Object.keys(estadoGlobal).forEach(id => {
+                    if (estadoGlobal[id]) {
+                        sincronizarUI(id, estadoGlobal[id].estado, estadoGlobal[id].placa);
+                    }
+                });
+
+                procederAOcupar();
+            } else {
+                alert("Por favor, ingrese una placa válida.");
+            }
+        }
+
+        function procederAOcupar() {
+            if (!espacioPendiente || miPlaca === "" || !suscripcionActiva) return;
+
+            let yaTieneEspacio = false;
+            Object.keys(estadoGlobal).forEach(key => {
+                if (estadoGlobal[key] && estadoGlobal[key].estado === true && estadoGlobal[key].placa === miPlaca) {
+                    yaTieneEspacio = true;
+                }
+            });
+
+            if (yaTieneEspacio) {
+                alert("Tu placa ya tiene un espacio reservado. Libéralo antes de ocupar otro.");
+                espacioPendiente = null;
+                return;
+            }
+
+            actualizarEstadoFirebase(espacioPendiente, true, miPlaca);
+            iniciarTemporizadoresLocales(espacioPendiente);
+            espacioPendiente = null;
+        }
+
+        function actualizarEstadoFirebase(id, ocupado, placa) {
+            database.ref('estacionamientos/' + id).set({
+                estado: ocupado,
+                placa: placa,
+                tiempo: ocupado ? Date.now() : 0
+            });
         }
 
         function escucharFirebase() {
@@ -765,11 +820,9 @@
                 const data = snapshot.val();
                 if (data) {
                     estadoGlobal = data;
-                    if (miPlaca !== "") {
-                        Object.keys(data).forEach(id => {
-                            sincronizarUI(id, data[id].estado, data[id].placa);
-                        });
-                    }
+                    Object.keys(data).forEach(id => {
+                        sincronizarUI(id, data[id].estado, data[id].placa);
+                    });
                 }
             });
         }
@@ -791,7 +844,7 @@
                 userName.textContent = `Placa: ${placaOcupante}`;
                 spot.className = 'spot red';
 
-                if (placaOcupante === miPlaca) {
+                if (placaOcupante === miPlaca && miPlaca !== "") {
                     btn.className = 'btn-action btn-secondary';
                     btn.textContent = 'Liberar Espacio';
                     btn.disabled = false;
@@ -814,17 +867,14 @@
             }
         }
 
-        // SISTEMA DE TIEMPOS LOCALES (Pantalla del dueño)
         function iniciarTemporizadoresLocales(id) {
             limpiarTemporizadoresLocales();
             miEspacioActual = id;
 
-            // Mostrar el aviso exacto a los 90 segundos (1:30 min)
             timeoutAviso = setTimeout(() => {
                 document.getElementById('warningModal').style.display = 'flex';
             }, 90000);
 
-            // Liberación automática y forzosa a los 150 segundos (2:30 min)
             timeoutLiberacion = setTimeout(() => {
                 document.getElementById('warningModal').style.display = 'none';
                 if (miEspacioActual === id) {
@@ -850,11 +900,8 @@
 
         function extenderTiempo() {
             document.getElementById('warningModal').style.display = 'none';
-            
-            // Cancelamos el viejo límite de 2:30
             clearTimeout(timeoutLiberacion);
             
-            // Damos exactamente 30 segundos extra
             timeoutLiberacion = setTimeout(() => {
                 if (miEspacioActual) {
                     actualizarEstadoFirebase(miEspacioActual, false, "");
@@ -863,18 +910,15 @@
             }, 30000);
 
             if (miEspacioActual) {
-                // Truco maestro: Engañamos a Firebase diciendo que el espacio empezó hace 2 minutos (120,000 ms).
-                // Así, el limpiador global de 2:30 min de fondo dejará vivir este espacio exactamente 30 segundos más.
                 database.ref('estacionamientos/' + miEspacioActual).update({ tiempo: Date.now() - 120000 });
             }
         }
 
-        // LIMPIADOR GLOBAL DE SEGURIDAD (Por si cierran la página)
         function iniciarLimpiezaAutomatica() {
             setInterval(() => {
                 if (miPlaca === "") return;
 
-                const tiempoMaximo = 150000; // 2:30 min
+                const tiempoMaximo = 150000; 
                 const ahora = Date.now();
 
                 Object.keys(estadoGlobal).forEach(id => {
@@ -882,7 +926,6 @@
                     if (espacio && espacio.estado === true && espacio.tiempo) {
                         const tiempoTranscurrido = ahora - espacio.tiempo;
                         
-                        // Si cualquier espacio sobrepasa los 2:30 min en la base de datos, lo liberamos
                         if (tiempoTranscurrido >= tiempoMaximo) {
                             database.ref('estacionamientos/' + id).set({ estado: false, placa: "", tiempo: 0 });
                         }
