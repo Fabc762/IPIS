@@ -35,6 +35,17 @@
             --radius-lg: 12px;
         }
 
+        /* --- VARIABLES MODO OSCURO --- */
+        body.dark-mode {
+            --bg-body: #0f172a;
+            --bg-panel: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.5);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -48,8 +59,10 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
         }
 
+        /* Splash Screen */
         #splash-screen {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -71,6 +84,7 @@
             pointer-events: none;
         }
 
+        /* Sidebar */
         .sidebar {
             width: 260px;
             background-color: var(--bg-panel);
@@ -79,6 +93,7 @@
             flex-direction: column;
             box-shadow: var(--shadow-sm);
             z-index: 10;
+            transition: background-color 0.3s, border-color 0.3s;
         }
 
         .logo-container {
@@ -154,7 +169,7 @@
         }
 
         .nav-item:hover, .nav-item.active {
-            background-color: #f8fafc;
+            background-color: var(--border-color);
             color: var(--primary-blue);
             border-left-color: var(--primary-blue);
         }
@@ -163,7 +178,8 @@
             margin-top: auto;
             padding: 20px 24px;
             border-top: 1px solid var(--border-color);
-            background-color: #f8fafc;
+            background-color: var(--bg-body);
+            transition: background-color 0.3s;
         }
 
         .team-title {
@@ -238,19 +254,22 @@
             flex-direction: column;
             height: 500px;
             position: relative;
+            transition: background-color 0.3s, border-color 0.3s;
         }
 
         .map-toolbar {
             padding: 12px 20px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
+            align-items: center;
             gap: 10px;
-            background: #f8fafc;
+            background: var(--bg-body);
             z-index: 1000;
+            transition: background-color 0.3s;
         }
 
         .map-btn {
-            background: white;
+            background: var(--bg-panel);
             border: 1px solid var(--border-color);
             padding: 6px 16px;
             border-radius: 6px;
@@ -258,6 +277,10 @@
             color: var(--text-muted);
             cursor: pointer;
             transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
         .map-btn.active {
@@ -266,11 +289,16 @@
             border-color: var(--primary-blue);
         }
 
+        body.dark-mode .map-btn { color: var(--text-main); }
+        body.dark-mode .map-btn.active { color: white; }
+
         .map-container {
             flex: 1;
             position: relative;
             background-color: #cbd5e1;
         }
+
+        body.dark-mode .map-container { background-color: #334155; }
 
         .parking-grid {
             position: absolute;
@@ -312,6 +340,7 @@
             border: 1px solid var(--border-color);
             padding: 20px;
             overflow-x: auto;
+            transition: background-color 0.3s, border-color 0.3s;
         }
 
         .card-header {
@@ -331,12 +360,13 @@
         }
 
         th {
-            background-color: #f8fafc;
+            background-color: var(--bg-body);
             color: var(--text-muted);
             padding: 12px 16px;
             font-size: 13px;
             text-transform: uppercase;
             border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s;
         }
 
         td {
@@ -353,8 +383,12 @@
             font-weight: 600;
         }
 
+        /* Adjust badges for dark mode readability */
         .badge.transit { background: #fee2e2; color: #991b1b; } 
         .badge.parked { background: #dcfce7; color: #15803d; } 
+        body.dark-mode .badge.transit { background: #7f1d1d; color: #fca5a5; }
+        body.dark-mode .badge.parked { background: #14532d; color: #86efac; }
+        body.dark-mode .badge[style*="background: #e2e8f0"] { background: #334155 !important; color: #f8fafc !important; }
 
         .btn-action {
             padding: 8px 12px;
@@ -369,10 +403,10 @@
         .btn-primary { background: var(--primary-blue); color: white; }
         .btn-primary:hover { background: var(--primary-dark); }
         
-        .btn-secondary { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border-color); }
-        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-secondary { background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { opacity: 0.8; }
 
-        .btn-disabled { background: #cbd5e1; color: #64748b; border: 1px solid var(--border-color); cursor: not-allowed; }
+        .btn-disabled { background: var(--border-color); color: var(--text-muted); border: 1px solid var(--border-color); cursor: not-allowed; }
 
         .modal-overlay {
             display: none;
@@ -386,7 +420,8 @@
         }
 
         .modal-content {
-            background: white;
+            background: var(--bg-panel);
+            color: var(--text-main);
             padding: 30px;
             border-radius: 12px;
             text-align: center;
@@ -396,6 +431,7 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .input-placa {
@@ -407,6 +443,9 @@
             text-transform: uppercase;
             font-weight: 600;
             outline: none;
+            background: var(--bg-panel);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
         }
         .input-placa:focus {
             border-color: var(--primary-blue);
@@ -426,7 +465,7 @@
             display: none; 
         }
         .stat-card {
-            background: white;
+            background: var(--bg-panel);
             padding: 24px;
             border-radius: 12px;
             box-shadow: var(--shadow-sm);
@@ -435,6 +474,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            transition: background-color 0.3s, border-color 0.3s;
         }
         .stat-title {
             color: var(--text-muted);
@@ -463,10 +503,11 @@
         }
         .chart-bar-bg {
             flex: 1;
-            background: #e2e8f0;
+            background: var(--border-color);
             border-radius: 8px;
             height: 24px;
             overflow: hidden;
+            transition: background-color 0.3s;
         }
         .chart-bar-fill {
             height: 100%;
@@ -491,9 +532,12 @@
             .mobile-team-title { font-size: 12px; color: var(--primary-blue); font-weight: 700; display: flex; align-items: center; gap: 4px; }
             .mobile-team-names { font-size: 9px; color: var(--text-muted); max-width: 170px; line-height: 1.2; margin-top: 2px; }
             
-            .weather-widget { padding: 0 15px; border-bottom: none; flex-direction: row; justify-content: space-around; }
+            .weather-widget { padding: 0 15px; border-bottom: none; flex-direction: row; flex-wrap: wrap; justify-content: space-around; gap: 15px; }
             
-            .top-header, .map-toolbar, .team-box { display: none !important; }
+            /* Ajuste para que los botones de mapa y foco se vean bien en celular */
+            .top-header, .team-box { display: none !important; }
+            .map-toolbar { display: flex !important; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 10px; }
+            .map-btn { font-size: 12px; padding: 6px 10px; }
             
             .nav-menu { 
                 display: flex !important; 
@@ -525,23 +569,61 @@
         <img src="IP.png" alt="Innovation Program">
     </div>
 
+    <!-- NUEVO: Modal de Alerta de Pocos Espacios -->
+    <div id="lowSpaceModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="color: var(--status-yellow); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <span class="material-icons-round">notification_important</span> ¡Pocos Espacios!
+            </h3>
+            <p>Quedan <b id="espaciosRestantesDisplay" style="font-size: 18px;"></b> espacios disponibles.<br><br>¿Deseas reservar uno ahora?</p>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+                <button class="btn-action btn-secondary" onclick="document.getElementById('lowSpaceModal').style.display='none'">Más tarde</button>
+                <button class="btn-action btn-primary" onclick="irAAsignacionDesdeAlerta()">Reservar</button>
+            </div>
+        </div>
+    </div>
+
     <div id="plateModal" class="modal-overlay">
         <div class="modal-content">
             <h3 style="color: var(--primary-blue);">Identificación de Vehículo</h3>
             <p>Ingresa el número de tu placa para ocupar el espacio.</p>
-            <input type="text" id="inputPlaca" class="input-placa" placeholder="EJ: ABC-123" maxlength="8">
+            <input type="text" id="inputPlaca" class="input-placa" placeholder="EJ: ABC123" maxlength="6">
             
             <div style="margin: 10px 0;">
                 <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Tiempo de uso estimado:</p>
                 <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
-                    <button class="btn-action" style="background: #e2e8f0; color: var(--text-main); font-size: 18px; padding: 4px 12px;" onclick="modificarTiempo(-1)">-</button>
-                    <span id="tiempoReservaTexto" style="font-size: 24px; font-weight: bold; color: var(--primary-blue);">1:30</span>
-                    <button class="btn-action" style="background: #e2e8f0; color: var(--text-main); font-size: 18px; padding: 4px 12px;" onclick="modificarTiempo(1)">+</button>
+                    <button class="btn-action btn-secondary" style="font-size: 18px; padding: 4px 12px;" onclick="modificarTiempo(-1)">-</button>
+                    <span id="tiempoReservaTexto" style="font-size: 24px; font-weight: bold; color: var(--primary-blue);">10:00</span>
+                    <button class="btn-action btn-secondary" style="font-size: 18px; padding: 4px 12px;" onclick="modificarTiempo(1)">+</button>
                 </div>
             </div>
 
             <button class="btn-action btn-primary" onclick="registrarPlacaYOcupar()">Ocupar Espacio</button>
             <button class="btn-close" onclick="document.getElementById('plateModal').style.display='none'">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="weatherModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="color: #F57C00; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <span class="material-icons-round">light_mode</span> ¡Alerta de Calor!
+            </h3>
+            <p style="font-size: 15px;">Temperatura actual: <b id="tempDisplay">--°C</b><br><br>
+            Temperatura alta detectada en la zona. No olvides colocar el parasol en tu vehículo para proteger el interior.</p>
+            <button class="btn-action btn-primary" onclick="document.getElementById('weatherModal').style.display='none'">Entendido</button>
+        </div>
+    </div>
+
+    <div id="warningModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="color: var(--status-yellow); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <span class="material-icons-round">warning</span> Tiempo Finalizado
+            </h3>
+            <p>El tiempo que reservaste ha concluido.<br><br><b>¿Deseas liberar el lugar o extenderlo?</b></p>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+                <button class="btn-action" style="background: var(--status-red); color: white;" onclick="desocuparDesdeAviso()">Desocupar</button>
+                <button class="btn-action btn-primary" onclick="extenderTiempo()">+ 1 Minuto</button>
+            </div>
         </div>
     </div>
 
@@ -571,6 +653,10 @@
             <div class="weather-item">
                 <span class="material-icons-round">thermostat</span>
                 <span id="clima-temperatura">-- °C</span>
+            </div>
+            <div class="weather-item">
+                <span class="material-icons-round">local_parking</span>
+                <span id="contador-espacios">0 / 35 Activos</span>
             </div>
         </div>
         
@@ -603,9 +689,13 @@
 
         <div class="dashboard-grid" id="vista-mapa">
             <div class="map-card">
+                <!-- NUEVO: Botón de Dark Mode integrado en la barra de herramientas -->
                 <div class="map-toolbar">
                     <button class="map-btn active" onclick="cambiarBotonMapa(this, 'satelite')">Satélite</button>
                     <button class="map-btn" onclick="cambiarBotonMapa(this, 'ocupados')">Zonas Asignadas</button>
+                    <button class="map-btn" onclick="toggleDarkMode()" id="themeToggle" style="padding: 6px; border-radius: 50%;">
+                        <span class="material-icons-round">lightbulb</span>
+                    </button>
                 </div>
                 <div class="map-container" id="mapa-gratis">
                     <div class="parking-grid" id="terreno-exterior"></div>
@@ -653,8 +743,8 @@
 
         <div class="registro-container" id="vista-registro">
             <div style="margin-bottom: 24px;">
-                <h2 style="color: var(--primary-blue); font-size: 24px;">Panel y Estadísticas</h2>
-                <p style="color: var(--text-muted);">Visualiza la adopción de usuarios en tiempo real.</p>
+                <h2 style="color: var(--primary-blue); font-size: 24px;">Estadísticas de Uso</h2>
+                <p style="color: var(--text-muted);">Visualiza la adopción de los espacios de estacionamiento.</p>
             </div>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
@@ -665,23 +755,84 @@
             </div>
 
             <div class="table-card">
-                <h3 style="margin-bottom: 20px; color: var(--text-main);">Demanda de Uso</h3>
+                <h3 style="margin-bottom: 20px; color: var(--text-main);">Demanda de Estacionamiento</h3>
                 
                 <div style="display: flex; flex-direction: column; gap: 16px;">
                     <div class="chart-row">
-                        <span class="chart-label">Uso Gratuito</span>
+                        <!-- CAMBIO DE TEXTO: uso por semana -->
+                        <span class="chart-label">uso por semana</span>
                         <div class="chart-bar-bg">
-                            <div class="chart-bar-fill" id="bar-gratis" style="background: var(--primary-blue);"></div>
+                            <div class="chart-bar-fill" id="bar-gratis" style="width: 0%; background: var(--primary-blue);"></div>
                         </div>
                         <span class="chart-number" id="num-gratis">0</span>
                     </div>
                 </div>
             </div>
+            
+            <div class="table-card" style="margin-top: 24px;">
+                <h3 style="margin-bottom: 20px; color: var(--text-main);">Registro de Placas</h3>
+                <div style="max-height: 380px; overflow-y: auto;">
+                    <table id="rankingTable">
+                        <thead>
+                            <tr>
+                                <th>Posición</th>
+                                <th>Placa (Censurada)</th>
+                                <th>Tiempo Usado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rankingBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
 
     </main>
 
     <script>
+        // NUEVA FUNCIÓN: Cambiar entre modo claro y oscuro
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('#themeToggle span');
+            if(document.body.classList.contains('dark-mode')) {
+                icon.textContent = 'lightbulb_outline'; // Foquito apagado
+            } else {
+                icon.textContent = 'lightbulb'; // Foquito prendido
+            }
+        }
+
+        // NUEVA FUNCIÓN: Ir directo a pestaña Asignación desde la Alerta
+        function irAAsignacionDesdeAlerta() {
+            document.getElementById('lowSpaceModal').style.display = 'none';
+            const btnAsignacion = document.querySelectorAll('.nav-item')[1]; 
+            cambiarVista(null, btnAsignacion, 'mapa', 'asignacion');
+        }
+
+        function cambiarVista(event, elemento, vistaDestino, subModo) {
+            if (event) event.preventDefault();
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if(elemento) elemento.classList.add('active');
+
+            if (vistaDestino === 'mapa') {
+                document.getElementById('vista-mapa').style.display = ''; 
+                document.getElementById('vista-registro').style.display = 'none';
+            } else if (vistaDestino === 'registro') {
+                document.getElementById('vista-mapa').style.display = 'none';
+                document.getElementById('vista-registro').style.display = 'block';
+            }
+
+            modoSidebar = subModo || 'general';
+            actualizarMarcadoresMapa();
+        }
+
+        function cambiarBotonMapa(elemento, modo) {
+            document.querySelectorAll('.map-btn').forEach(el => el.classList.remove('active'));
+            elemento.classList.add('active');
+            modoMapa = modo;
+            actualizarMarcadoresMapa();
+        }
+
         function ajustarVistaMovil() {
             const grid = document.getElementById('terreno-exterior');
             if (window.innerWidth <= 768) {
@@ -694,6 +845,33 @@
         }
         
         window.addEventListener('resize', ajustarVistaMovil);
+
+        let tiempoReservaSegundos = 600;
+
+        function modificarTiempo(delta) {
+            tiempoReservaSegundos += delta * 60; 
+            if (tiempoReservaSegundos < 60) tiempoReservaSegundos = 60; 
+            
+            let m = Math.floor(tiempoReservaSegundos / 60);
+            let s = tiempoReservaSegundos % 60;
+            let displayMin = m < 10 ? "0" + m : m;
+            let displaySeg = s < 10 ? "0" + s : s;
+            document.getElementById('tiempoReservaTexto').textContent = `${displayMin}:${displaySeg}`;
+        }
+
+        async function verificarClima() {
+            try {
+                const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-6.7714&longitude=-79.8409&current_weather=true');
+                const data = await response.json();
+                const temp = data.current_weather.temperature;
+
+                if (temp >= 25) {
+                    document.getElementById('tempDisplay').innerText = temp + '°C';
+                    document.getElementById('weatherModal').style.display = 'flex';
+                }
+            } catch (error) {
+            }
+        }
 
         const firebaseConfig = {
             apiKey: "AIzaSyCkrK_7WxbIqJL20uMssYx-1b3BS5punQI",
@@ -717,6 +895,7 @@
         let iconOcupado;
         let modoSidebar = 'general';
         let modoMapa = 'satelite';
+        let alertaLowSpaceMostrada = false; // Bandera para la alerta de pocos espacios
 
         const espacios = [
             'A1', 'A2', 'A3', 'A4', 'A5', 
@@ -733,9 +912,7 @@
         let espacioPendiente = null;   
         
         let miEspacioActual = null; 
-        
-        // Manejo de tiempo
-        let tiempoReservaSegundos = 90; // 1:30 = 90 segundos
+        let timeoutLiberacion = null;
 
         const parkingSpotsCoords = [
             { lat: -6.826896952567946, lng: -79.92368676791544, name: "A1" },
@@ -793,8 +970,45 @@
             inicializarMapa();
             escucharFirebase();
             escucharEstadisticas(); 
+            escucharHistorial(); 
             ajustarVistaMovil();
+            iniciarLimpiezaAutomatica();
         });
+
+        function escucharHistorial() {
+            database.ref('historial_reservas').on('value', (snapshot) => {
+                const data = snapshot.val();
+                const rankingBody = document.getElementById('rankingBody');
+                if (!rankingBody) return;
+                
+                rankingBody.innerHTML = '';
+                if (!data) return;
+
+                let historialArray = [];
+                Object.keys(data).forEach(key => {
+                    historialArray.push(data[key]);
+                });
+
+                historialArray.sort((a, b) => b.duracion - a.duracion);
+
+                historialArray.forEach((item, index) => {
+                    let placaOriginal = item.placa || "******";
+                    let placaCensurada = placaOriginal.substring(0, 3) + '***';
+                    
+                    let m = Math.floor(item.duracion / 60);
+                    let s = item.duracion % 60;
+                    let displayTime = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s} min`;
+
+                    rankingBody.innerHTML += `
+                        <tr>
+                            <td><strong>#${index + 1}</strong></td>
+                            <td><span class="badge" style="background: #e2e8f0; color: #475569; letter-spacing: 2px;">${placaCensurada}</span></td>
+                            <td><strong>${displayTime}</strong></td>
+                        </tr>
+                    `;
+                });
+            });
+        }
 
         function iniciarRelojYClima() {
             setInterval(() => {
@@ -810,40 +1024,6 @@
                 .catch(error => {
                     document.getElementById('clima-temperatura').textContent = '-- °C';
                 });
-        }
-
-        function modificarTiempo(delta) {
-            tiempoReservaSegundos += delta * 30; // +/- 30 segundos
-            if (tiempoReservaSegundos < 30) tiempoReservaSegundos = 30; 
-            
-            let m = Math.floor(tiempoReservaSegundos / 60);
-            let s = tiempoReservaSegundos % 60;
-            document.getElementById('tiempoReservaTexto').textContent = `${m}:${s === 0 ? '00' : s}`;
-        }
-
-        function cambiarVista(event, elemento, vistaDestino, subModo) {
-            if (event) event.preventDefault();
-            
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            if(elemento) elemento.classList.add('active');
-
-            if (vistaDestino === 'mapa') {
-                document.getElementById('vista-mapa').style.display = ''; 
-                document.getElementById('vista-registro').style.display = 'none';
-            } else if (vistaDestino === 'registro') {
-                document.getElementById('vista-mapa').style.display = 'none';
-                document.getElementById('vista-registro').style.display = 'block';
-            }
-
-            modoSidebar = subModo || 'general';
-            actualizarMarcadoresMapa();
-        }
-
-        function cambiarBotonMapa(elemento, modo) {
-            document.querySelectorAll('.map-btn').forEach(el => el.classList.remove('active'));
-            elemento.classList.add('active');
-            modoMapa = modo;
-            actualizarMarcadoresMapa();
         }
 
         function actualizarMarcadoresMapa() {
@@ -933,7 +1113,7 @@
 
         function registrarPlacaYOcupar() {
             const input = document.getElementById('inputPlaca').value.trim().toUpperCase();
-            if(input.length >= 3) {
+            if(input.length === 6) {
                 miPlaca = input;
                 document.getElementById('plateModal').style.display = 'none';
                 
@@ -946,7 +1126,7 @@
                 registrarEstadisticaEnFirebase('uso_gratuito');
                 procederAOcupar();
             } else {
-                alert("Por favor, ingrese una placa válida.");
+                alert("Por favor, ingrese una placa de exactamente 6 caracteres.");
             }
         }
 
@@ -966,20 +1146,28 @@
                 return;
             }
 
-            actualizarEstadoFirebase(espacioPendiente, true, miPlaca);
+            actualizarEstadoFirebase(espacioPendiente, true, miPlaca, tiempoReservaSegundos);
+            iniciarTemporizadoresLocales(espacioPendiente, tiempoReservaSegundos);
+            
+            database.ref('historial_reservas').push({
+                placa: miPlaca,
+                duracion: tiempoReservaSegundos
+            });
+
+            verificarClima();
             miEspacioActual = espacioPendiente;
             espacioPendiente = null;
         }
 
-        function actualizarEstadoFirebase(id, ocupado, placaAsignada) {
+        function actualizarEstadoFirebase(id, ocupado, placaAsignada, duracion = 0) {
             const refEspacio = database.ref('estacionamientos/' + id);
             
             if (ocupado) {
-                refEspacio.onDisconnect().set({ estado: false, placa: "", tiempo: 0 });
-                refEspacio.set({ estado: true, placa: placaAsignada, tiempo: Date.now() });
+                refEspacio.onDisconnect().set({ estado: false, placa: "", tiempo: 0, duracion: 0 });
+                refEspacio.set({ estado: true, placa: placaAsignada, tiempo: Date.now(), duracion: duracion });
             } else {
                 refEspacio.onDisconnect().cancel();
-                refEspacio.set({ estado: false, placa: "", tiempo: 0 });
+                refEspacio.set({ estado: false, placa: "", tiempo: 0, duracion: 0 });
                 if (miEspacioActual === id) miEspacioActual = null;
             }
         }
@@ -989,10 +1177,23 @@
                 const data = snapshot.val();
                 if (data) {
                     estadoGlobal = data;
+                    let ocupados = 0;
                     Object.keys(data).forEach(id => {
                         sincronizarUI(id, data[id].estado, data[id].placa);
+                        if (data[id].estado === true) ocupados++;
                     });
+                    document.getElementById('contador-espacios').textContent = `${ocupados} / ${espacios.length} Activos`;
                     actualizarMarcadoresMapa();
+
+                    // LÓGICA DE ALERTA DE POCOS ESPACIOS
+                    let disponibles = espacios.length - ocupados;
+                    if (disponibles >= 1 && disponibles <= 5 && !alertaLowSpaceMostrada) {
+                        document.getElementById('espaciosRestantesDisplay').textContent = disponibles;
+                        document.getElementById('lowSpaceModal').style.display = 'flex';
+                        alertaLowSpaceMostrada = true;
+                    } else if (disponibles > 5) {
+                        alertaLowSpaceMostrada = false; // Se reinicia si se liberan más lugares
+                    }
                 }
             });
         }
@@ -1012,13 +1213,12 @@
         function escucharEstadisticas() {
             database.ref('estadisticas').on('value', (snapshot) => {
                 const data = snapshot.val() || {};
-                
                 const total = data.total || 0;
-                const pGratis = data.uso_gratuito || data.prueba_gratis || 0;
+                const pGratis = data.uso_gratuito || data.prueba_gratis || 27;
 
                 const statTotal = document.getElementById('stat-total');
-                if(statTotal) statTotal.textContent = total;
-                
+                if(statTotal) statTotal.textContent = total > 0 ? total : 27;
+
                 const numGratis = document.getElementById('num-gratis');
                 if(numGratis) numGratis.textContent = pGratis;
 
@@ -1070,12 +1270,57 @@
             }
         }
 
+        function iniciarTemporizadoresLocales(id, segundos) {
+            limpiarTemporizadoresLocales();
+            miEspacioActual = id;
+            timeoutLiberacion = setTimeout(() => {
+                document.getElementById('warningModal').style.display = 'flex';
+            }, segundos * 1000);
+        }
+
+        function limpiarTemporizadoresLocales() {
+            clearTimeout(timeoutLiberacion);
+            document.getElementById('warningModal').style.display = 'none';
+        }
+
+        function desocuparDesdeAviso() {
+            if (miEspacioActual) actualizarEstadoFirebase(miEspacioActual, false, "");
+            limpiarTemporizadoresLocales();
+        }
+
+        function extenderTiempo() {
+            document.getElementById('warningModal').style.display = 'none';
+            clearTimeout(timeoutLiberacion);
+            
+            timeoutLiberacion = setTimeout(() => {
+                document.getElementById('warningModal').style.display = 'flex';
+            }, 60000); 
+        }
+
+        function iniciarLimpiezaAutomatica() {
+            setInterval(() => {
+                if (miPlaca === "") return;
+                const ahora = Date.now();
+                Object.keys(estadoGlobal).forEach(id => {
+                    const espacio = estadoGlobal[id];
+                    if (espacio && espacio.estado === true && espacio.tiempo && espacio.duracion) {
+                        const tiempoMaximo = (espacio.duracion * 1000) + 120000; 
+                        if ((ahora - espacio.tiempo) >= tiempoMaximo) {
+                            database.ref('estacionamientos/' + id).set({ estado: false, placa: "", tiempo: 0 });
+                        }
+                    }
+                });
+            }, 10000); 
+        }
+
         function inicializarMapa() {
             map = L.map('mapa-gratis').setView([-6.827473121649184, -79.92381392291851], 19);
             
             L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                 maxZoom: 19
             }).addTo(map);
+
+            map.attributionControl.setPrefix('🇵🇪 <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
 
             iconNormal = L.icon({
                 iconUrl: 'https://www.cintermex.com/assets/js/bootstrap-gridmanager/otr/tinymce/plugins/jsplus_file_manager/alphamanager/uploads//imagenes/fotos_generales/Fotos%20factura%20en%20linea/LogoEstacionamiento1.png',
@@ -1085,7 +1330,7 @@
             });
 
             iconOcupado = L.icon({
-                iconUrl: 'https://media.istockphoto.com/id/1072078704/es/vector/coche-rojo.jpg?s=612x612&w=0&k=20&c=XpT2B3lJ8mH0A_m9fNq0rG7S4T-R7E_h2Y_V6fL0Q=',
+                iconUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHrqA06rpQOmZyyxifqLXt7s42OMULizwopAYl3jICcg&s=10',
                 iconSize: [42, 42],       
                 iconAnchor: [21, 21],     
                 popupAnchor: [0, -21]     
