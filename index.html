@@ -127,9 +127,7 @@
             color: #60a5fa;
         }
 
-        .mobile-team {
-            display: none; 
-        }
+        .mobile-team { display: none; }
 
         .weather-widget {
             padding: 0 24px 24px 24px;
@@ -152,14 +150,8 @@
             transition: background-color 0.3s;
         }
 
-        .weather-item span.material-icons-round {
-            font-size: 20px;
-            color: var(--primary-blue);
-        }
-
-        body.dark-mode .weather-item span.material-icons-round {
-            color: #60a5fa;
-        }
+        .weather-item span.material-icons-round { font-size: 20px; color: var(--primary-blue); }
+        body.dark-mode .weather-item span.material-icons-round { color: #60a5fa; }
 
         .nav-menu {
             padding: 24px 16px;
@@ -192,9 +184,7 @@
             box-shadow: 0 4px 12px rgba(0, 80, 136, 0.2);
         }
 
-        body.dark-mode .nav-item:hover {
-            color: #60a5fa;
-        }
+        body.dark-mode .nav-item:hover { color: #60a5fa; }
 
         .team-box {
             margin-top: auto;
@@ -216,9 +206,7 @@
             gap: 8px;
         }
 
-        body.dark-mode .team-title {
-            color: #60a5fa;
-        }
+        body.dark-mode .team-title { color: #60a5fa; }
 
         .team-list {
             list-style: none;
@@ -267,9 +255,7 @@
             background: rgba(255, 255, 255, 0.9);
         }
 
-        body.dark-mode .top-header {
-            background: rgba(30, 41, 59, 0.9);
-        }
+        body.dark-mode .top-header { background: rgba(30, 41, 59, 0.9); }
 
         .top-header h2 {
             font-size: 22px;
@@ -401,25 +387,10 @@
             transition: background-color 0.3s, border-color 0.3s;
         }
 
-        .card-header {
-            margin-bottom: 20px;
-        }
+        .card-header { margin-bottom: 20px; }
+        .card-header h3 { color: var(--text-main); font-size: 18px; font-weight: 700; margin: 0; letter-spacing: -0.3px; }
 
-        .card-header h3 {
-            color: var(--text-main);
-            font-size: 18px;
-            font-weight: 700;
-            margin: 0;
-            letter-spacing: -0.3px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            text-align: left;
-        }
-
+        table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
         th {
             background-color: var(--bg-body);
             color: var(--text-muted);
@@ -431,7 +402,6 @@
             border-bottom: 2px solid var(--border-color);
             transition: background-color 0.3s;
         }
-
         th:first-child { border-top-left-radius: 8px; }
         th:last-child { border-top-right-radius: 8px; }
 
@@ -442,19 +412,9 @@
             font-size: 14px;
             font-weight: 500;
         }
+        tr:hover td { background-color: var(--bg-body); }
 
-        tr:hover td {
-            background-color: var(--bg-body);
-        }
-
-        .badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-        }
-
+        .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.3px; }
         .badge.transit { background: #fee2e2; color: #b91c1c; } 
         .badge.parked { background: #dcfce7; color: #15803d; } 
         body.dark-mode .badge.transit { background: #7f1d1d; color: #fca5a5; }
@@ -472,19 +432,10 @@
             letter-spacing: 0.3px;
         }
 
-        .btn-primary { 
-            background: var(--primary-gradient); 
-            color: white; 
-            box-shadow: 0 4px 12px rgba(0, 80, 136, 0.2);
-        }
-        .btn-primary:hover { 
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(0, 80, 136, 0.3);
-        }
-        
+        .btn-primary { background: var(--primary-gradient); color: white; box-shadow: 0 4px 12px rgba(0, 80, 136, 0.2); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 80, 136, 0.3); }
         .btn-secondary { background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-color); }
         .btn-secondary:hover { background: var(--border-color); }
-
         .btn-disabled { background: var(--bg-body); color: var(--text-muted); border: 1px dashed var(--border-color); cursor: not-allowed; }
 
         .modal-overlay {
@@ -499,10 +450,7 @@
             animation: fadeIn 0.3s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .modal-content {
             background: var(--bg-panel);
@@ -521,10 +469,7 @@
             animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         .input-placa {
             padding: 14px;
@@ -540,10 +485,7 @@
             letter-spacing: 2px;
             transition: all 0.3s;
         }
-        .input-placa:focus {
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 4px rgba(0, 80, 136, 0.1);
-        }
+        .input-placa:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 4px rgba(0, 80, 136, 0.1); }
         
         .btn-close {
             background: transparent;
@@ -555,10 +497,7 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .btn-close:hover {
-            background: var(--bg-body);
-            color: var(--text-main);
-        }
+        .btn-close:hover { background: var(--bg-body); color: var(--text-main); }
 
         .registro-container {
             padding: 32px;
@@ -581,192 +520,71 @@
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+        .stat-title { color: var(--text-muted); font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+        .stat-value { font-size: 48px; font-weight: 800; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 12px; }
 
-        .stat-title {
-            color: var(--text-muted);
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 700;
-        }
-        
-        .stat-value {
-            font-size: 48px;
-            font-weight: 800;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-top: 12px;
-        }
-
-        .tutorial-container-view {
-            padding: 32px;
-            display: none;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .tutorial-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .tutorial-header h2 {
-            color: var(--primary-blue);
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 12px;
-        }
-
+        .tutorial-container-view { padding: 32px; display: none; max-width: 1200px; margin: 0 auto; width: 100%; }
+        .tutorial-header { text-align: center; margin-bottom: 40px; }
+        .tutorial-header h2 { color: var(--primary-blue); font-size: 28px; font-weight: 800; margin-bottom: 12px; }
         body.dark-mode .tutorial-header h2 { color: #60a5fa; }
+        .tutorial-header p { color: var(--text-muted); font-size: 16px; }
 
-        .tutorial-header p {
-            color: var(--text-muted);
-            font-size: 16px;
+        /* -------------------------------------
+           CSS FIX PARA EL TUTORIAL INTERACTIVO 
+           ------------------------------------- */
+        
+        /* Quitamos el z-index de los padres para que no atrapen los elementos iluminados */
+        body.tutorial-active-mode .sidebar,
+        body.tutorial-active-mode .top-header,
+        body.tutorial-active-mode .map-toolbar,
+        body.tutorial-active-mode .map-card,
+        body.tutorial-active-mode .table-card {
+            z-index: auto !important;
         }
 
-        .tutorial-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
+        /* Diseño del resplandor: sin background blanco, sin sobreescribir position */
+        .tutorial-highlight {
+            z-index: 100002 !important;
+            box-shadow: 0 0 0 4px var(--accent-green), 0 0 20px rgba(132, 189, 0, 0.5) !important;
+            pointer-events: none !important; /* Deshabilita clics durante el tutorial */
+            transition: box-shadow 0.3s ease;
         }
 
-        .tutorial-step {
+        /* Para botones específicos en el menú nav lateral (asegurar color) */
+        .nav-item.tutorial-highlight,
+        .map-btn.tutorial-highlight {
             background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 32px 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            box-shadow: var(--shadow-md);
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .tutorial-step:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary-blue);
-        }
-        
-        .step-number {
-            background: var(--primary-gradient);
-            color: white;
-            width: 48px;
-            height: 48px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 50%;
-            font-size: 20px;
-            font-weight: 800;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 12px rgba(0, 80, 136, 0.3);
-        }
-        
-        .tutorial-step img {
-            max-width: 100%;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        
-        .step-text h3 {
-            margin: 0 0 12px 0;
-            color: var(--text-main);
-            font-size: 20px;
-            font-weight: 800;
-        }
-        
-        .step-text p {
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin: 0;
-            font-size: 15px;
-            font-weight: 500;
+            border-radius: var(--radius-md);
         }
 
         @media (max-width: 768px) {
             body { flex-direction: column; height: auto; overflow-y: auto; }
+            .sidebar { width: 100%; height: auto; flex-direction: column; border-right: none; border-bottom: 1px solid var(--border-color); padding: 0; position: sticky; top: 0; z-index: 100; }
             
-            .sidebar { 
-                width: 100%; 
-                height: auto; 
-                flex-direction: column; 
-                border-right: none; 
-                border-bottom: 1px solid var(--border-color); 
-                padding: 0; 
-                position: sticky;
-                top: 0;
-                z-index: 100;
-            }
-            
+            body.tutorial-active-mode .sidebar { z-index: auto !important; }
+
             .logo-container { padding: 16px 20px; border-bottom: none; width: 100%; display: flex; justify-content: space-between; align-items: center; }
             .mobile-team { display: flex !important; flex-direction: column; align-items: flex-end; text-align: right; }
             .mobile-team-title { font-size: 12px; color: var(--primary-blue); font-weight: 800; display: flex; align-items: center; gap: 4px; }
             body.dark-mode .mobile-team-title { color: #60a5fa; }
             .mobile-team-names { font-size: 9px; color: var(--text-muted); max-width: 170px; line-height: 1.3; margin-top: 4px; font-weight: 500; }
-            
             .weather-widget { display: none; } 
             .top-header, .team-box { display: none !important; }
             
-            .nav-menu { 
-                display: flex !important; 
-                flex-direction: row; 
-                padding: 12px 16px; 
-                justify-content: flex-start; 
-                gap: 8px; 
-                overflow-x: auto; 
-                width: 100%;
-                scrollbar-width: none; 
-                background: var(--bg-panel);
-                border-top: 1px solid var(--border-color);
-                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            }
+            .nav-menu { display: flex !important; flex-direction: row; padding: 12px 16px; justify-content: flex-start; gap: 8px; overflow-x: auto; width: 100%; scrollbar-width: none; background: var(--bg-panel); border-top: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
             .nav-menu::-webkit-scrollbar { display: none; } 
             
-            .nav-item { 
-                padding: 10px 16px; 
-                font-size: 13px; 
-                border-radius: 24px; 
-                background: var(--bg-body); 
-                white-space: nowrap; 
-                margin: 0;
-                border: 1px solid transparent;
-            }
-            .nav-item.active { 
-                background: var(--primary-gradient); 
-                color: white; 
-                border-color: transparent;
-                box-shadow: 0 4px 10px rgba(0, 80, 136, 0.2);
-            }
+            .nav-item { padding: 10px 16px; font-size: 13px; border-radius: 24px; background: var(--bg-body); white-space: nowrap; margin: 0; border: 1px solid transparent; }
+            .nav-item.active { background: var(--primary-gradient); color: white; border-color: transparent; box-shadow: 0 4px 10px rgba(0, 80, 136, 0.2); }
             
             .main-content { overflow-y: visible; padding-top: 10px; }
             .dashboard-grid { display: flex; flex-direction: column; padding: 16px; gap: 20px; }
             .map-card { height: 400px; border-radius: 16px; }
-            
             .map-toolbar { padding: 12px; justify-content: center; }
             .map-btn { font-size: 13px; padding: 8px 14px; border-radius: 20px; }
             
-            .parking-grid.mobile-grid { 
-                position: relative; 
-                top: auto; 
-                right: auto; 
-                margin: 0 auto; 
-                transform: scale(0.9); 
-                transform-origin: center; 
-                justify-content: center; 
-            }
+            .parking-grid.mobile-grid { position: relative; top: auto; right: auto; margin: 0 auto; transform: scale(0.9); transform-origin: center; justify-content: center; }
             .table-card { padding: 16px; border-radius: 16px; }
             .table-card > div { overflow-x: auto; }
             th, td { white-space: nowrap; padding: 12px; }
@@ -977,38 +795,10 @@
         <div class="tutorial-container-view" id="vista-tutorial">
             <div class="tutorial-header">
                 <h2>Aprende a usar Innova Parking</h2>
-                <p>Sigue estos 3 simples pasos para dominar el sistema de reservas al instante.</p>
-            </div>
-            
-            <div class="tutorial-cards">
-                
-                <div class="tutorial-step">
-                    <div class="step-number">1</div>
-                    <img src="LugaresDeEstacionamiento.png" alt="Lugares de Estacionamiento" onerror="this.src='https://via.placeholder.com/400x200?text=Mapa+de+Zonas'">
-                    <div class="step-text">
-                        <h3>Busca tu lugar</h3>
-                        <p>Échale un ojo al mapa o a la lista inferior. Revisa cuáles cuadros están libres (en verde brillante), escoge el que más te acomode o te quede más cerca a la entrada y presiona 'Ocupar Espacio' para empezar.</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <div class="step-number">2</div>
-                    <img src="OcuparEspacio.png" alt="Ocupar Espacio" onerror="this.src='https://via.placeholder.com/400x200?text=Ingreso+de+Datos'">
-                    <div class="step-text">
-                        <h3>Separa tu espacio</h3>
-                        <p>Anota tu placa (6 caracteres exactos) y configura cuánto tiempo vas a dejar el carro con los botones + y -. Cuando regreses, entra aquí mismo para liberar tu lugar y mantener el orden del colegio.</p>
-                    </div>
-                </div>
-
-                <div class="tutorial-step">
-                    <div class="step-number">3</div>
-                    <img src="Asignacion2.png" alt="Asignación" onerror="this.src='https://via.placeholder.com/400x200?text=Mi+Zona'">
-                    <div class="step-text">
-                        <h3>Confirma tu zona</h3>
-                        <p>En la vista 'Mi Asignación' del menú lateral verás el resumen exacto de tu reserva en el mapa. El sistema filtrará el resto para mostrarte únicamente el espacio que tú estás ocupando en tiempo real.</p>
-                    </div>
-                </div>
-
+                <p>Sigue estos simples pasos para dominar el sistema de reservas al instante.</p>
+                <button class="btn-action btn-primary" style="margin-top: 24px; padding: 14px 28px; font-size: 16px; border-radius: 12px;" onclick="iniciarTutorialInteractivo()">
+                    <span class="material-icons-round" style="vertical-align: middle; margin-right: 8px;">play_circle</span> Iniciar Tutorial
+                </button>
             </div>
         </div>
 
@@ -1505,6 +1295,152 @@
             marcadoresLayer = L.layerGroup().addTo(map);
             mapReady = true;
             actualizarMarcadoresMapa();
+        }
+
+        /* -------------------------------------
+           LÓGICA DEL TUTORIAL INTERACTIVO 
+           ------------------------------------- */
+
+        const pasosTutorial = [
+            {
+                target: '.map-container',
+                title: 'Paso 1: Explora el Mapa',
+                desc: 'Visualiza en tiempo real los espacios libres (verde) y ocupados (rojo).'
+            },
+            {
+                target: '#btn-A1',
+                title: 'Paso 2: Ocupar Espacio',
+                desc: 'Aquí verás el botón de ocupar para cada espacio. Presiónalo para abrir el formulario.'
+            },
+            {
+                target: '#plateModal .modal-content',
+                title: 'Paso 3: Registra tu Placa',
+                desc: 'Ingresa tu placa y define el tiempo estimado que dejarás el vehículo.'
+            },
+            {
+                target: '.parking-grid',
+                title: 'Paso 4: Cuadrícula Rápida',
+                desc: 'Usa esta vista miniatura siempre visible en la esquina para presionar rápido el cuadro que prefieras.'
+            },
+            {
+                target: '.nav-menu .nav-item:nth-child(2)',
+                title: 'Paso 5: Mi Asignación',
+                desc: 'Filtra el mapa entero para ver únicamente el espacio que tú has reservado.'
+            },
+            {
+                target: '.nav-menu .nav-item:nth-child(3)',
+                title: 'Paso 6: Registro General',
+                desc: 'Accede a la pestaña para ver la tabla de placas más usadas y las estadísticas totales.'
+            },
+            {
+                target: '.map-toolbar .map-btn:nth-child(1)',
+                title: 'Paso 7: Ver Todos',
+                desc: 'Restaura la vista del mapa para ver todos los espacios de estacionamiento nuevamente.'
+            },
+            {
+                target: '.map-toolbar .map-btn:nth-child(2)',
+                title: 'Paso 8: Solo Ocupados',
+                desc: 'Filtra la vista para mostrarte en el mapa únicamente aquellos lugares que están ocupados.'
+            }
+        ];
+
+        let pasoActual = 0;
+
+        function iniciarTutorialInteractivo() {
+            // Activamos el modo tutorial que desactiva los z-index de los padres problemáticos
+            document.body.classList.add('tutorial-active-mode');
+
+            if(!document.getElementById('tutorial-overlay-bg')) {
+                const bg = document.createElement('div');
+                bg.id = 'tutorial-overlay-bg';
+                bg.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: none; backdrop-filter: blur(4px); transition: opacity 0.3s;';
+                document.body.appendChild(bg);
+
+                const dialog = document.createElement('div');
+                dialog.id = 'tutorial-dialog';
+                dialog.style.cssText = 'position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: var(--bg-panel); color: var(--text-main); padding: 24px; border-radius: 20px; z-index: 100003; width: 90%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 2px solid var(--primary-blue); display: none; text-align: center;';
+                document.body.appendChild(dialog);
+            }
+
+            cambiarVista(null, document.querySelector('.nav-item:nth-child(1)'), 'mapa', 'general');
+
+            document.getElementById('tutorial-overlay-bg').style.display = 'block';
+            document.getElementById('tutorial-dialog').style.display = 'block';
+            pasoActual = 0;
+            mostrarPaso(pasoActual);
+        }
+
+        function mostrarPaso(index) {
+            document.querySelectorAll('.tutorial-highlight').forEach(el => {
+                el.classList.remove('tutorial-highlight');
+                if(el.dataset.origPosition) {
+                    el.style.position = el.dataset.origPosition;
+                    delete el.dataset.origPosition;
+                } else {
+                    el.style.position = '';
+                }
+            });
+
+            if (pasosTutorial[index].target.includes('plateModal')) {
+                document.getElementById('plateModal').style.display = 'flex';
+                document.getElementById('plateModal').style.zIndex = '100001'; 
+            } else {
+                document.getElementById('plateModal').style.display = 'none';
+                document.getElementById('plateModal').style.zIndex = '';
+            }
+
+            const paso = pasosTutorial[index];
+            let target = document.querySelector(paso.target);
+
+            if (target) {
+                // Solo le agregamos position: relative a elementos que no estén posicionados de ninguna forma,
+                // evitando tocar la cuadrícula (que es absoluta).
+                const compStyle = window.getComputedStyle(target);
+                if (compStyle.position === 'static' && !target.classList.contains('parking-grid')) {
+                    target.dataset.origPosition = target.style.position;
+                    target.style.position = 'relative';
+                }
+                
+                target.classList.add('tutorial-highlight');
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            const dialog = document.getElementById('tutorial-dialog');
+            dialog.innerHTML = `
+                <div style="font-size: 13px; font-weight: 800; color: var(--accent-green); text-transform: uppercase; margin-bottom: 8px;">Paso ${index + 1} de ${pasosTutorial.length}</div>
+                <h3 style="font-size: 20px; color: var(--primary-blue); margin-bottom: 12px;">${paso.title}</h3>
+                <p style="font-size: 15px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">${paso.desc}</p>
+                <div style="display: flex; gap: 12px; justify-content: center;">
+                    ${index > 0 ? `<button class="btn-action btn-secondary" style="flex: 1;" onclick="mostrarPaso(${index - 1})">Anterior</button>` : ''}
+                    ${index < pasosTutorial.length - 1 
+                        ? `<button class="btn-action btn-primary" style="flex: 1;" onclick="mostrarPaso(${index + 1})">Siguiente</button>`
+                        : `<button class="btn-action btn-primary" style="flex: 1; background: var(--status-green);" onclick="cerrarTutorial()">Finalizar</button>`
+                    }
+                </div>
+                <button class="btn-close" style="position: absolute; top: 10px; right: 10px;" onclick="cerrarTutorial()">
+                    <span class="material-icons-round" style="font-size: 20px;">close</span>
+                </button>
+            `;
+        }
+
+        function cerrarTutorial() {
+            document.getElementById('tutorial-overlay-bg').style.display = 'none';
+            document.getElementById('tutorial-dialog').style.display = 'none';
+            document.getElementById('plateModal').style.display = 'none';
+            document.getElementById('plateModal').style.zIndex = '';
+            
+            // Apagamos el modo tutorial que liberaba los z-index
+            document.body.classList.remove('tutorial-active-mode');
+
+            document.querySelectorAll('.tutorial-highlight').forEach(el => {
+                el.classList.remove('tutorial-highlight');
+                if(el.dataset.origPosition) {
+                    el.style.position = el.dataset.origPosition;
+                    delete el.dataset.origPosition;
+                } else {
+                    el.style.position = '';
+                }
+            });
         }
     </script>
 </body>
