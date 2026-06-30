@@ -118,6 +118,13 @@
         body.dark-mode .top-header { background: rgba(30, 41, 59, 0.9); }
         .top-header h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
 
+        /* Estilos del Input de Seguridad Oculto y su Indicador */
+        .admin-trigger-container { display: flex; align-items: center; gap: 8px; margin-left: 15px; }
+        .indicador-seguridad { width: 10px; height: 10px; background-color: var(--border-color); border-radius: 3px; cursor: pointer; transition: background-color 0.3s; }
+        .indicador-seguridad:hover { background-color: var(--status-red); box-shadow: 0 0 8px rgba(239, 68, 68, 0.5); }
+        .secret-admin-input { background: transparent; border: none; outline: none; color: transparent; width: 20px; transition: width 0.3s, color 0.3s; font-size: 14px; }
+        .secret-admin-input:focus { color: var(--status-red); border-bottom: 1px dashed var(--status-red); width: 100px; }
+
         .dashboard-grid { padding: 32px; display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: auto auto; gap: 24px; max-width: 1600px; margin: 0 auto; width: 100%; }
         
         .map-card { grid-column: 1 / -1; background: var(--bg-panel); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--border-color); overflow: hidden; display: flex; flex-direction: column; height: 550px; position: relative; transition: background-color 0.3s, border-color 0.3s; }
@@ -251,6 +258,10 @@
             border-radius: var(--radius-md);
         }
 
+        @media (max-width: 1200px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
         @media (max-width: 768px) {
             body { flex-direction: column; height: auto; overflow-y: auto; }
             .sidebar { width: 100%; height: auto; flex-direction: column; border-right: none; border-bottom: 1px solid var(--border-color); padding: 0; position: sticky; top: 0; z-index: 100; }
@@ -277,8 +288,15 @@
             th, td { white-space: nowrap; padding: 12px; }
             .registro-container, .tutorial-container-view { padding: 16px; }
             .stat-card { padding: 20px; }
-            .yuki-chat-panel { width: 100%; height: 100%; bottom: 0; right: 0; border-radius: 0; max-height: 100vh; position: fixed; z-index: 99999; }
+            
+            /* Solución Definitiva al Teclado Móvil para Yuki */
+            .yuki-chat-panel { 
+                width: 100%; height: 100dvh; max-height: 100dvh; border-radius: 0; 
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99999; 
+            }
             .yuki-fab { bottom: 20px; right: 20px; }
+
+            .admin-trigger-container { display: none !important; } /* Ocultar Seguridad en Móviles */
         }
     </style>
 </head>
@@ -286,6 +304,16 @@
 
     <div id="splash-screen">
         <img src="IP.png" alt="Innovation Program">
+    </div>
+
+    <div id="userAlertModal" class="modal-overlay" style="z-index: 100000;">
+        <div class="modal-content" style="border: 3px solid var(--status-red); background: #fff1f2;">
+            <h3 style="color: var(--status-red); display: flex; justify-content: center; align-items: center; gap: 8px; font-weight: 800;">
+                <span class="material-icons-round">warning</span> Atención / Seguridad
+            </h3>
+            <p id="userAlertText" style="font-size: 16px; font-weight: 600; color: #881337;"></p>
+            <button class="btn-action" style="background: var(--status-red); color: white; padding: 12px; font-size: 15px;" onclick="document.getElementById('userAlertModal').style.display='none'">Entendido</button>
+        </div>
     </div>
 
     <div id="plateModal" class="modal-overlay">
@@ -388,7 +416,13 @@
 
     <main class="main-content">
         <header class="top-header">
-            <h2>Panel Principal</h2>
+            <div style="display: flex; align-items: center;">
+                <h2>Panel Principal</h2>
+                <div class="admin-trigger-container">
+                    <div class="indicador-seguridad" onclick="document.getElementById('secretAdminInput').focus()" title="Acceso Admin"></div>
+                    <input type="password" id="secretAdminInput" class="secret-admin-input" autocomplete="off" onkeydown="verificarAdmin(event)">
+                </div>
+            </div>
         </header>
 
         <div class="dashboard-grid" id="vista-mapa">
@@ -482,11 +516,59 @@
 
         <div class="tutorial-container-view" id="vista-tutorial">
             <div class="tutorial-header">
-                <h2>Aprende a usar Innova Parking</h2>
+                <h2>Aprende a usar InnovaTransit</h2>
                 <p>Sigue estos simples pasos para dominar el sistema de reservas al instante.</p>
                 <button class="btn-action btn-primary" style="margin-top: 24px; padding: 14px 28px; font-size: 16px; border-radius: 12px;" onclick="iniciarTutorialInteractivo()">
                     <span class="material-icons-round" style="vertical-align: middle; margin-right: 8px;">play_circle</span> Iniciar Tutorial
                 </button>
+            </div>
+        </div>
+
+        <div class="registro-container" id="vista-seguridad">
+            <div style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2 style="color: var(--status-red); font-size: 28px; font-weight: 800; margin-bottom: 8px;">Panel de Seguridad</h2>
+                    <p style="color: var(--text-muted); font-size: 16px;">Gestión de conflictos, reubicación y alertas directas a conductores.</p>
+                </div>
+                <button class="btn-action" style="background: var(--bg-panel); color: var(--status-red); border: 2px solid var(--status-red);" onclick="salirAdmin()">Cerrar Sesión Segura</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 32px;">
+                <div class="table-card" style="border-top: 4px solid var(--status-red);">
+                    <h3 style="color: var(--status-red); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;"><span class="material-icons-round">warning</span> Enviar Alerta Inmediata</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">La alerta aparecerá como un pop-up rojo en el dispositivo del usuario.</p>
+                    <input type="text" id="adminAlertPlaca" class="input-placa" placeholder="PLACA (EJ: ABC123)" style="width: 100%; margin-bottom: 12px; font-size: 14px; padding: 10px;">
+                    <textarea id="adminAlertMsg" placeholder="Escribe la advertencia o instrucción aquí..." style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); height: 80px; margin-bottom: 12px; font-family: inherit; font-size: 14px; resize: none;"></textarea>
+                    <button class="btn-action" style="background: var(--status-red); color: white; width: 100%; padding: 12px;" onclick="enviarAlertaAdmin()">Emitir Alerta al Vehículo</button>
+                </div>
+
+                <div class="table-card" style="border-top: 4px solid var(--primary-blue);">
+                    <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px; color: var(--primary-blue);"><span class="material-icons-round">settings</span> Gestión de Espacios</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Resolver conflictos de placas o liberar espacios trabados.</p>
+                    <div style="max-height: 250px; overflow-y: auto;">
+                        <table id="adminSpacesTable">
+                            <thead>
+                                <tr>
+                                    <th>Espacio</th>
+                                    <th>Placa</th>
+                                    <th>Forzar Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminSpacesBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="table-card" style="border-top: 4px solid var(--accent-green);">
+                    <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px; color: var(--accent-green);"><span class="material-icons-round">smart_toy</span> Mensajes de Yuki</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Reportes automáticos de IA por conflictos de placas.</p>
+                    <div style="max-height: 250px; overflow-y: auto; background: var(--bg-body); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <ul id="adminYukiMessages" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+                            <li style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 20px;">Cargando mensajes...</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -505,7 +587,7 @@
                     </div>
                     <div>
                         <h3 class="yuki-title">Asistente Yuki <span class="material-icons-round" style="font-size: 14px; color:#a3e635;">verified</span></h3>
-                        <span class="yuki-status">En línea - InnovaTransit</span>
+                        <span class="yuki-status">En línea - Innova Schools</span>
                     </div>
                 </div>
                 <div style="display:flex; align-items:center; gap: 8px;">
@@ -570,6 +652,7 @@
             document.getElementById('vista-mapa').style.display = vistaDestino === 'mapa' ? '' : 'none';
             document.getElementById('vista-registro').style.display = vistaDestino === 'registro' ? 'block' : 'none';
             document.getElementById('vista-tutorial').style.display = vistaDestino === 'tutorial' ? 'block' : 'none';
+            document.getElementById('vista-seguridad').style.display = vistaDestino === 'seguridad' ? 'block' : 'none';
 
             modoSidebar = subModo || 'general';
             if(vistaDestino === 'mapa') actualizarMarcadoresMapa();
@@ -594,6 +677,26 @@
         }
         
         window.addEventListener('resize', ajustarVistaMovil);
+
+        /* --- SOLUCIÓN DE YUKI PARA TECLADO MÓVIL DENTRO DE 100dvh --- */
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', () => {
+                const panel = document.getElementById('yukiChatPanel');
+                if (window.innerWidth <= 768 && panel.classList.contains('active')) {
+                    const viewportHeight = window.visualViewport.height;
+                    panel.style.height = viewportHeight + 'px';
+                    panel.style.top = window.visualViewport.offsetTop + 'px';
+                    panel.style.bottom = 'auto';
+                    
+                    const msgArea = document.getElementById('yukiMessagesArea');
+                    if (msgArea) msgArea.scrollTop = msgArea.scrollHeight;
+                } else {
+                    panel.style.height = '100dvh';
+                    panel.style.top = '0';
+                    panel.style.bottom = '0';
+                }
+            });
+        }
 
         let tiempoReservaSegundos = 600;
 
@@ -711,9 +814,150 @@
             escucharFirebase();
             escucharEstadisticas(); 
             escucharHistorial(); 
+            escucharAlertasYuki();
             ajustarVistaMovil();
             iniciarLimpiezaAutomatica();
         });
+
+        /* --- MODO SEGURIDAD (ADMIN) LOGIC --- */
+        function verificarAdmin(e) {
+            if (e.key === 'Enter') {
+                if (e.target.value === 'Security') {
+                    e.target.value = '';
+                    let password = prompt("Ingrese la contraseña de seguridad:");
+                    if (password === "InnovaTransit") {
+                        cambiarVista(null, null, 'seguridad', 'general');
+                        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                        actualizarTablaAdmin();
+                        alert("⚠️ Has ingresado al Modo de Seguridad del Sistema.");
+                    } else {
+                        alert("Contraseña incorrecta. Acceso denegado.");
+                    }
+                } else {
+                    e.target.value = '';
+                }
+            }
+        }
+
+        function salirAdmin() {
+            cambiarVista(null, document.querySelector('.nav-item:nth-child(1)'), 'mapa', 'general');
+        }
+
+        function actualizarTablaAdmin() {
+            const tbody = document.getElementById('adminSpacesBody');
+            tbody.innerHTML = '';
+            
+            espacios.forEach(id => {
+                const data = estadoGlobal[id];
+                if (data && data.estado) {
+                    tbody.innerHTML += `
+                        <tr style="background: rgba(239, 68, 68, 0.05);">
+                            <td><strong>${id}</strong></td>
+                            <td><span class="badge" style="background: var(--border-color); color: var(--text-main);">${data.placa}</span></td>
+                            <td style="display: flex; gap: 8px;">
+                                <button class="btn-action" style="background: var(--status-red); color: white; padding: 6px 12px; font-size: 12px;" onclick="adminLiberar('${id}', '${data.placa}')">Liberar</button>
+                                <button class="btn-action" style="background: var(--primary-blue); color: white; padding: 6px 12px; font-size: 12px;" onclick="adminReubicar('${id}', '${data.placa}', ${data.duracion || 0}, ${data.tiempo || 0})">Mover</button>
+                            </td>
+                        </tr>
+                    `;
+                }
+            });
+
+            if (tbody.innerHTML === '') {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: var(--text-muted);">No hay vehículos registrados actualmente.</td></tr>';
+            }
+        }
+
+        function adminLiberar(id, placa) {
+            if (confirm(`¿Estás seguro de forzar la liberación del espacio ${id} (Placa: ${placa})?`)) {
+                database.ref('estacionamientos/' + id).set({ estado: false, placa: "", tiempo: 0, duracion: 0 });
+                if (miEspacioActual === id) { miEspacioActual = null; miPlaca = ""; }
+                alert("Espacio liberado exitosamente.");
+            }
+        }
+
+        function adminReubicar(idActual, placa, duracionOld, tiempoOld) {
+            const nuevoId = prompt(`Mover placa ${placa} del espacio ${idActual}.\nIngresa el ID del NUEVO espacio (Ej: B2):`).trim().toUpperCase();
+            if (!nuevoId) return;
+
+            if (!espacios.includes(nuevoId)) {
+                alert("El espacio ingresado no existe.");
+                return;
+            }
+
+            if (estadoGlobal[nuevoId] && estadoGlobal[nuevoId].estado) {
+                alert(`El espacio ${nuevoId} ya está ocupado por ${estadoGlobal[nuevoId].placa}. Libéralo primero.`);
+                return;
+            }
+
+            database.ref('estacionamientos/' + idActual).set({ estado: false, placa: "", tiempo: 0, duracion: 0 });
+            database.ref('estacionamientos/' + nuevoId).set({ estado: true, placa: placa, tiempo: tiempoOld, duracion: duracionOld });
+            
+            if (miEspacioActual === idActual) miEspacioActual = nuevoId;
+
+            alert(`Vehículo reubicado con éxito al espacio ${nuevoId}.`);
+        }
+
+        function enviarAlertaAdmin() {
+            const placa = document.getElementById('adminAlertPlaca').value.trim().toUpperCase();
+            const msg = document.getElementById('adminAlertMsg').value.trim();
+
+            if (placa.length !== 6 || msg === "") {
+                alert("Debes ingresar una placa válida (6 caracteres) y un mensaje.");
+                return;
+            }
+
+            database.ref('alertas/' + placa).set({
+                mensaje: msg,
+                timestamp: Date.now()
+            }).then(() => {
+                alert("Alerta enviada correctamente a la placa " + placa);
+                document.getElementById('adminAlertPlaca').value = "";
+                document.getElementById('adminAlertMsg').value = "";
+            });
+        }
+
+        function iniciarEscuchaAlertasUsuario() {
+            if (!miPlaca) return;
+            
+            database.ref('alertas/' + miPlaca).on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data && data.mensaje) {
+                    document.getElementById('userAlertText').innerText = data.mensaje;
+                    document.getElementById('userAlertModal').style.display = 'flex';
+                    database.ref('alertas/' + miPlaca).remove();
+                }
+            });
+        }
+
+        function escucharAlertasYuki() {
+            database.ref('alertas_yuki').on('value', (snapshot) => {
+                const data = snapshot.val();
+                const list = document.getElementById('adminYukiMessages');
+                if (!list) return;
+                list.innerHTML = '';
+                if (data) {
+                    Object.keys(data).reverse().forEach(key => {
+                        const alertData = data[key];
+                        const date = new Date(alertData.timestamp).toLocaleTimeString();
+                        list.innerHTML += `
+                            <li style="background: var(--bg-panel); border-left: 4px solid var(--accent-green); padding: 12px; border-radius: 4px; box-shadow: var(--shadow-sm);">
+                                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">${date}</div>
+                                <div style="font-size: 13px; color: var(--text-main); font-weight: 600; margin-bottom: 8px;">${alertData.mensaje}</div>
+                                <button class="btn-action" style="background: #e2e8f0; color: var(--text-main); font-size: 11px; padding: 6px 12px;" onclick="eliminarAlertaYuki('${key}')">Marcar como Resuelto</button>
+                            </li>
+                        `;
+                    });
+                } else {
+                    list.innerHTML = '<li style="text-align:center; color:var(--text-muted); font-size: 13px; padding: 20px;">No hay alertas pendientes de Yuki.</li>';
+                }
+            });
+        }
+
+        function eliminarAlertaYuki(key) {
+            database.ref('alertas_yuki/' + key).remove();
+        }
+        /* -------------------------------------- */
 
         function escucharHistorial() {
             database.ref('historial_reservas').on('value', (snapshot) => {
@@ -843,6 +1087,8 @@
 
                 registrarEstadisticaEnFirebase('uso_gratuito');
                 procederAOcupar();
+                
+                iniciarEscuchaAlertasUsuario();
             } else {
                 alert("Por favor, ingrese una placa de exactamente 6 caracteres alfanuméricos.");
             }
@@ -901,6 +1147,10 @@
                     });
                     document.getElementById('contador-espacios').textContent = `${ocupados} / ${espacios.length} Activos`;
                     actualizarMarcadoresMapa();
+                    
+                    if(document.getElementById('vista-seguridad').style.display === 'block') {
+                        actualizarTablaAdmin();
+                    }
                 }
             });
         }
@@ -1184,13 +1434,24 @@
         const YUKI_GROQ_API_KEY = "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";
         const YUKI_GEMINI_API_KEY = "AIzaSyB9IBPkcho42gWCbp_Q8JIc3yuGU3P2xao";
 
+        const YUKI_SYSTEM_PROMPT = `Eres Yuki, la asistente virtual otaku/anime de InnovaTransit, el sistema web de control de parqueo de Innova Schools Chiclayo, creado por el Grupo 5 (Gianella, Pamela, Fernando, Fabrizio, Adolfo, Kristhel). 
+        REGLAS ESTRICTAS:
+        - NO pidas pagos, tarifas ni hables de dinero. El estacionamiento es gratuito para la comunidad escolar.
+        - NO inventes tecnologías que no existen aquí (como cámaras de vigilancia físicas, sensores de piso, plumas automáticas o IA de visión).
+        - SOLO explica lo que tiene la web: 
+          1. Mapa satelital con espacios verdes (libres) y rojos (ocupados).
+          2. Reserva de espacio ingresando una placa de 6 caracteres y un tiempo estimado.
+          3. Panel de 'Registro' con estadísticas y ranking de placas más usadas.
+          4. Si un usuario reporta que alguien usó su placa o se estacionó mal, dile que el sistema ha enviado una alerta automática al Panel de Seguridad (donde un administrador humano resolverá el conflicto expulsando al infractor o mandando alertas rojas a sus pantallas).
+        Responde de forma útil, directa, empática y usa emojis anime/kawaii.`;
+
         let chatHistoryGroq = [
-            { role: "system", content: "Eres Yuki, la asistente virtual amigable de InnovaTransit, muy inteligente y con un toque otaku/anime del sistema de control de tránsito y parqueo de Innova Schools. Estás ayudando en el proyecto del Grupo 5 (Gianella, Pamela, Fernando, Fabrizio, Adolfo, Kristhel) en la sede Chiclayo. Responde de forma concisa, útil e ingeniosa. Usa emojis." }
+            { role: "system", content: YUKI_SYSTEM_PROMPT }
         ];
 
         let chatHistoryGemini = [
-            { role: "user", parts: [{ text: "A partir de ahora eres Yuki, la asistente virtual amigable, muy inteligente y con un toque otaku/anime del sistema de control de tránsito y parqueo de Innova Schools. Estás ayudando en el proyecto del Grupo 5 (Gianella, Pamela, Fernando, Fabrizio, Adolfo, Kristhel) en la sede Chiclayo. Responde a mis consultas de forma concisa, útil e ingeniosa. Usa emojis." }] },
-            { role: "model", parts: [{ text: "¡Entendido! Soy Yuki, tu asistente amable lista para ayudarte con el sistema de Innova Schools Chiclayo. ¡Vamos a estacionar con estilo!" }] }
+            { role: "user", parts: [{ text: YUKI_SYSTEM_PROMPT }] },
+            { role: "model", parts: [{ text: "¡Entendido! Soy Yuki, tu asistente otaku-tecnológica lista para ayudarte con el sistema de InnovaTransit de Innova Schools Chiclayo. Conozco perfectamente las reglas y funciones. ¡Vamos a estacionar con estilo!" }] }
         ];
 
         let base64ImageYuki = null;
@@ -1266,6 +1527,17 @@
             inputField.style.height = '24px';
             removeYukiImage(); 
             
+            const textLower = text.toLowerCase();
+            const pideAyuda = textLower.includes("ayuda") || textLower.includes("problema") || textLower.includes("error") || textLower.includes("alguien");
+            const temaPlaca = textLower.includes("placa") || textLower.includes("usando") || textLower.includes("ocupado");
+
+            if (pideAyuda && temaPlaca) {
+                database.ref('alertas_yuki').push({
+                    mensaje: `🚨 Usuario reporta problema: "${text}"`,
+                    timestamp: Date.now()
+                });
+            }
+
             const loader = document.getElementById('yukiLoader');
             loader.classList.add('active');
             document.getElementById('yukiMessagesArea').scrollTop = document.getElementById('yukiMessagesArea').scrollHeight;
