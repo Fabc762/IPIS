@@ -1712,14 +1712,6 @@
                         })
                     });
                     
-                    // --- NUEVA LÍNEA PARA MANEJAR EL ERROR 401 ---
-                    if (!response.ok) {
-                        const errorBody = await response.text();
-                        console.error(`Error de Groq (${response.status}):`, errorBody);
-                        throw new Error(`Error de conexión con Groq: Status ${response.status}. Revisa tu API Key.`);
-                    }
-                    // ----------------------------------------------
-
                     const data = await response.json();
                     if(data.choices && data.choices[0]) {
                         const reply = data.choices[0].message.content;
